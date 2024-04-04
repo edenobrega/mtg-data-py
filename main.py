@@ -13,7 +13,7 @@ from time import sleep
 # onces thats done load it back into pandas
 # get new ids from there
 
-
+card_to_type_premap = []
 
 # data = pd.read_sql("select * from [MTG].[Rarity]", engine)
 
@@ -120,20 +120,26 @@ def transform(new_cards, new_sets):
 
     rarities = new_cards["rarity"].drop_duplicates()
     layouts = new_cards["layout"].drop_duplicates()
-    card_types_lookup = new_cards["type_line"].str.split(" ").explode().drop_duplicates()
+    # This is done again below ?
+    # card_types_lookup = new_cards["type_line"].str.split(" ").explode().drop_duplicates()
     # this then needs to be transformed into a list of the "id" column of each json object
     card_parts = new_cards.loc[new_cards["all_parts"].isnull() == False, ["id", "all_parts"]]
 
+    # Card Type Line
+    # 1. Seperate card types by space, then explode, maintain card id
+    # 2. join cards with type_line exploded to get them seperated
     card_typeline = new_cards.loc[:, ["id","type_line"]]
     card_typeline_lookup = card_typeline["type_line"].str.split(" ").explode()
     card_to_type_premap = pd.merge(card_typeline, card_typeline_lookup, left_index=True, right_index=True).loc[:, ["id", "type_line_y"]]
 
-    card_faces_raw = new_cards[new_cards["card_faces"].notna(), ["id", "card_faces"]]
-    face_explode = card_faces_raw.explode()
+    # Card Faces
+    card_faces_raw = new_cards.loc[new_cards["card_faces"].notna(), ["id", "card_faces"]]
+    face_explode = card_faces_raw.explode("card_faces")
     faces_norm = pd.json_normalize(face_explode["card_faces"])
     with_id = pd.merge(face_explode, faces_norm, left_index=True, right_index=True)
     card_faces = with_id.loc[:, ["id", "object", "name", "image_uris.normal", "mana_cost", "oracle_text", "flavor_text", "layout", "oracle_id", "power", "toughness"]]
 
+    # Card Parts
     card_parts_start = new_cards.loc[new_cards["all_parts"].notna() ,["id", "all_parts"]]
     parts_explode = card_parts_start.explode("all_parts")
     nested_parts = pd.DataFrame.from_dict(parts_explode["all_parts"])
@@ -141,13 +147,21 @@ def transform(new_cards, new_sets):
     nested_parts["component"] = nested_parts["all_parts"].str["component"]
     nested_parts["id"] = nested_parts["all_parts"].str["id"]
 
-    card_parts = pd.merge(card_parts_start, y, left_index=True, right_index=True)
+    card_parts = pd.merge(card_parts_start, nested_parts, left_index=True, right_index=True)
     card_parts = card_parts.rename(columns={"id_x":"card_id", "id_y":"related_card"})
     card_parts = card_parts.drop(["all_parts_x", "all_parts_y"], axis=1)
 
+    # Cards
+    cards = new_cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
+                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout"]]
 
-    # sets = df.loc[:, ["set", "set_name", "set_uri", "set_uri", "set_id"]]
-    # sets.drop_duplicates(sets.columns.values, keep="first", inplace=True) 
+
+    cards_no_multi = cards.loc[~cards["card_faces"].notna(), ["id", "image_uris"]]
+    images = pd.json_normalize(cards_no_multi["image_uris"])
+    cards = pd.merge(cards, images["normal"], left_index=True, right_index=True)
+
+
+    # rename columns to match db
     pass
 
 def load():
@@ -194,5 +208,6 @@ if __name__ == "__main__":
     engine = sa.create_engine("mssql+pyodbc://DESKTOP-UPNS42E\\SQLEXPRESS/tcgct-dev?driver=ODBC+Driver+17+for+SQL+Server")
     # this needs to also pass set data
     new_cards_frame, new_sets_frame  = extract()
+    print(new_cards_frame["id"].dtype)
     transform(new_cards_frame, new_sets_frame)
     # load()
