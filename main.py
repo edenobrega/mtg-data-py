@@ -5,6 +5,7 @@ import logging
 import datetime as dt
 import requests
 import json
+import transform_lib as tl
 from sys import exit
 from os import mkdir, path, getenv, remove
 from dotenv import load_dotenv
@@ -132,12 +133,7 @@ def transform(new_cards, new_sets):
     card_typeline_lookup = card_typeline["type_line"].str.split(" ").explode()
     card_to_type_premap = pd.merge(card_typeline, card_typeline_lookup, left_index=True, right_index=True).loc[:, ["id", "type_line_y"]]
 
-    # Card Faces
-    card_faces_raw = new_cards.loc[new_cards["card_faces"].notna(), ["id", "card_faces"]]
-    face_explode = card_faces_raw.explode("card_faces")
-    faces_norm = pd.json_normalize(face_explode["card_faces"])
-    with_id = pd.merge(face_explode, faces_norm, left_index=True, right_index=True)
-    card_faces = with_id.loc[:, ["id", "object", "name", "image_uris.normal", "mana_cost", "oracle_text", "flavor_text", "layout", "oracle_id", "power", "toughness"]]
+    card_faces = tl.get_card_faces(new_cards)
 
     # Card Parts
     card_parts_start = new_cards.loc[new_cards["all_parts"].notna() ,["id", "all_parts"]]
@@ -153,13 +149,14 @@ def transform(new_cards, new_sets):
 
     # Cards
     cards = new_cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
-                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout"]]
+                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris"]]
 
 
     cards_no_multi = cards.loc[~cards["card_faces"].notna(), ["id", "image_uris"]]
     images = pd.json_normalize(cards_no_multi["image_uris"])
     cards = pd.merge(cards, images["normal"], left_index=True, right_index=True)
 
+    print(cards.head())
 
     # rename columns to match db
     pass
