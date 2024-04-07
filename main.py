@@ -10,6 +10,7 @@ from sys import exit
 from os import mkdir, path, getenv, remove
 from dotenv import load_dotenv
 from time import sleep
+from collections import namedtuple
 # load new sets into db
 # onces thats done load it back into pandas
 # get new ids from there
@@ -122,16 +123,11 @@ def transform(new_cards, new_sets):
     rarities = new_cards["rarity"].drop_duplicates()
     layouts = new_cards["layout"].drop_duplicates()
 
-    # card_types_lookup = new_cards["type_line"].str.split(" ").explode().drop_duplicates()
-    # this then needs to be transformed into a list of the "id" column of each json object
-
-
     # Card Type Line
-    # 1. Seperate card types by space, then explode, maintain card id
-    # 2. join cards with type_line exploded to get them seperated
     card_typeline = new_cards.loc[:, ["id","type_line"]]
     card_typeline_lookup = card_typeline["type_line"].str.split(" ").explode()
     card_to_type_premap = pd.merge(card_typeline, card_typeline_lookup, left_index=True, right_index=True).loc[:, ["id", "type_line_y"]]
+    card_types_lookup = card_typeline_lookup.drop_duplicates()
 
     card_faces = tl.get_card_faces(new_cards)
     card_parts = tl.get_card_parts(new_cards)
@@ -140,14 +136,23 @@ def transform(new_cards, new_sets):
     cards = new_cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
                               "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris"]]
 
-
     cards_no_multi = cards.loc[~cards["card_faces"].notna(), ["id", "image_uris"]]
     images = pd.json_normalize(cards_no_multi["image_uris"])
     cards = pd.merge(cards, images["normal"], left_index=True, right_index=True)
 
-
     # rename columns to match db
+    type_line_tuple = namedtuple("type_line_tuple", "premap lookup")
     log.info("Finished transform")
+    return {
+        "cards": cards,
+        "card_faces": card_faces,
+        "card_parts": card_parts,
+        "rarities": rarities,
+        "layouts": layouts,
+        "type_line": type_line_tuple(card_to_type_premap, card_types_lookup),
+        "sets": sets,
+        "set_types": set_types
+    }
 
 def load():
     log.info("Beginning load . . .")
@@ -193,5 +198,5 @@ if __name__ == "__main__":
     engine = sa.create_engine("mssql+pyodbc://DESKTOP-UPNS42E\\SQLEXPRESS/tcgct-dev?driver=ODBC+Driver+17+for+SQL+Server")
     # this needs to also pass set data
     new_cards_frame, new_sets_frame  = extract()
-    transform(new_cards_frame, new_sets_frame)
+    data = transform(new_cards_frame, new_sets_frame)
     # load()
