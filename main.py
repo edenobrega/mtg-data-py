@@ -36,7 +36,7 @@ card_to_type_premap = []
 #     if_exists="append"
 # )
 
-def get_from_db(sql):
+def get_from_db(sql: str):
     return pd.read_sql(sql, engine)
 
 def request_set_cards(_uri, data):
@@ -69,10 +69,14 @@ def extract():
                 log.critical("file does not exist")
                 exit()
             card_frame = pd.read_json(bulk_name, orient='records')
+            log.info("finished loading from bulk data file")
             bulk_sets = card_frame.loc[:, ["set", "set_name", "set_type", "set_search_uri", "set_id"]].drop_duplicates(keep="first")
             new_sets = bulk_sets.loc[~bulk_sets["set_id"].isin(db_sets["source_id"]), :]
         else:
-            api_sets = requests.get("https://api.scryfall.com/sets").json()
+            sets_api_uri = "https://api.scryfall.com/sets"
+            log.info("requesting sets data from %s", sets_api_uri)
+            # TODO: handle potential errors
+            api_sets = requests.get(sets_api_uri).json()
             api_frame = pd.DataFrame.from_dict(api_sets["data"])
 
             # Get all sets that dont exist in the db
@@ -148,9 +152,65 @@ def transform(new_cards, new_sets):
         "set_types": set_types
     }
 
-def load():
+def load(data: dict):
     log.info("Beginning load . . .")
     
+    # Set Type
+    log.info("%s adding new set types", result)
+    tf_settypes = data["set_types"].drop_duplicates().to_frame(name="name")      
+    db_settypes = get_from_db("SELECT [name] FROM [MTG].[SetType]")
+    new_settypes = tf_settypes.loc[~tf_settypes["name"].isin(db_settypes["name"]), :]
+    result = new_settypes.to_sql(
+        schema="MTG",
+        name="SetType",
+        con=engine,
+        index=False,
+        if_exists="append"
+    )
+    log.info("%s new set types added", result)
+
+    # Sets
+    sets_source_ids = data["sets"].drop_duplicates()
+    db_sets = get_from_db("select [source_id] from mtg.[Set]")
+    new_sets: pd.DataFrame = sets_source_ids.loc[~sets_source_ids["set_id"].isin(db_sets["source_id"])]
+    new_sets = new_sets.rename(columns={
+        "set_id":"source_id",
+        "set":"shorthand",
+        "set_search_uri":"search_uri",
+        "set_type":"set_type_id"
+    })
+    settype_lookup = get_from_db("select [id], [name] from [MTG].[SetType]").set_index("name")
+    settype_lookup["id"] = settype_lookup["id"].astype("str")
+    settype_lookup = settype_lookup.to_dict()["id"]
+    new_sets["set_type_id"] = new_sets["set_type_id"].replace(settype_lookup)
+    new_sets["set_type_id"] = new_sets["set_type_id"].astype("int")
+
+    result = new_sets.to_sql(
+        schema="MTG",
+        name="Set",
+        con=engine,
+        index=False,
+        if_exists="append"
+    )
+
+    # Rarity
+
+    # Layout
+
+    # Card
+
+    # Card Face
+
+    # Card Part
+
+    # Card Type
+
+    # Type Line
+
+
+
+
+
 
     # Get all unique types
 
@@ -163,7 +223,6 @@ def load():
     # Get all types with linked card id
 
     # mapping shennanigans 
-
 
     pass
 
@@ -203,7 +262,6 @@ if __name__ == "__main__":
     LOAD_FROM_BULK = getenv("TCGCT_LOAD_FROM_BULK").upper() == "TRUE"
 
     engine = sa.create_engine("mssql+pyodbc://DESKTOP-UPNS42E\\SQLEXPRESS/tcgct-dev?driver=ODBC+Driver+17+for+SQL+Server")
-    # this needs to also pass set data
     new_cards_frame, new_sets_frame  = extract()
     data = transform(new_cards_frame, new_sets_frame)
-    # load()
+    # load(data)
