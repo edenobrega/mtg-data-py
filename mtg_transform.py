@@ -1,28 +1,47 @@
 import pandas as pd
+import numpy as np
 from collections import namedtuple
 
 
 # Some cards with two faces only have one image, and those images will be in the usual
 def get_card_faces(cards: pd.DataFrame):
     # Cards with actual multiple faces
-    column_check = ["id", "object", "name", "image_uris.normal", "mana_cost", "oracle_text", "cmc", "flavor_text", "layout", "loyalty", "oracle_id", "power", "toughness"]
-    card_faces_multi_raw = cards.loc[(cards["card_faces"].notna()) & (cards["image_uris"].isna()), ["id", "card_faces"]]
-    face_explode = card_faces_multi_raw.explode("card_faces")
-    faces_norm = pd.json_normalize(face_explode["card_faces"]).set_index(face_explode.index)
-    with_id = pd.merge(face_explode, faces_norm, left_index=True, right_index=True)
-    with_id = with_id.reindex(with_id.columns.union(column_check, sort=False), axis=1,fill_value=pd.NA)
-    card_faces_multi = with_id.loc[:, column_check].drop_duplicates()
-
-    # Cards with multiple faces, but one image in root image_uris prop
     column_check = ["id", "object", "name", "normal", "mana_cost", "oracle_text", "cmc", "flavor_text", "layout", "loyalty", "oracle_id", "power", "toughness"]
-    card_faces_single_raw = cards.loc[(cards["card_faces"].notna()) & (cards["image_uris"].notna()), ["id", "image_uris", "card_faces"]]
-    images_norm = pd.json_normalize(card_faces_single_raw["image_uris"]).set_index(card_faces_single_raw.index).loc[:, ["normal"]]
-    with_image = pd.merge(card_faces_single_raw, images_norm, left_index=True, right_index=True)
-    face_explode = with_image.explode("card_faces")
-    explode_norm = pd.json_normalize(face_explode["card_faces"]).set_index(face_explode.index)
-    explode_image_merge = pd.merge(with_image, explode_norm, left_index=True, right_index=True)
-    explode_image_merge = explode_image_merge.reindex(explode_image_merge.columns.union(column_check, sort=False), axis=1, fill_value=pd.NA)
-    card_faces_single = explode_image_merge.loc[:, column_check]
+    column_check_multi = ["id", "object", "name", "image_uris.normal", "mana_cost", "oracle_text", "cmc", "flavor_text", "layout", "loyalty", "oracle_id", "power", "toughness"]
+    if "card_faces" in cards:
+        card_faces_multi_raw = cards.loc[(cards["card_faces"].notna()) & (cards["image_uris"].isna()), ["id", "card_faces", "oracle_id"]]
+        if card_faces_multi_raw.empty == False:
+            face_explode = card_faces_multi_raw.explode("card_faces")
+            faces_norm = pd.json_normalize(face_explode["card_faces"]).set_index(face_explode.index)
+            with_id = pd.merge(face_explode, faces_norm, left_index=True, right_index=True, how="left")
+            with_id["oracle_id_x"] = with_id["oracle_id_x"].fillna(with_id["oracle_id_y"])
+            with_id = with_id.drop(["oracle_id_y"], axis=1)
+            with_id = with_id.rename(columns={ "oracle_id_x":"oracle_id" })
+            with_id = with_id.reindex(with_id.columns.union(column_check_multi, sort=False), axis=1,fill_value=np.nan)
+            card_faces_multi = with_id.loc[:, column_check_multi].drop_duplicates()
+        else:
+            card_faces_multi = pd.DataFrame(columns=column_check_multi)
+
+        # Cards with multiple faces, but one image in root image_uris prop
+        column_check = ["id", "object", "name", "normal", "mana_cost", "oracle_text", "cmc", "flavor_text", "layout", "loyalty", "oracle_id", "power", "toughness"]
+        card_faces_single_raw = cards.loc[(cards["card_faces"].notna()) & (cards["image_uris"].notna()), ["id", "image_uris", "card_faces", "oracle_id"]]
+        if card_faces_single_raw.empty == False:
+            images_norm = pd.json_normalize(card_faces_single_raw["image_uris"]).set_index(card_faces_single_raw.index).loc[:, ["normal"]]
+            with_image = pd.merge(card_faces_single_raw, images_norm, left_index=True, right_index=True)
+            face_explode = with_image.explode("card_faces")
+            explode_norm = pd.json_normalize(face_explode["card_faces"]).set_index(face_explode.index)
+            explode_image_merge = pd.merge(with_image, explode_norm, left_index=True, right_index=True)
+            explode_image_merge = explode_image_merge.reindex(explode_image_merge.columns.union(column_check, sort=False), axis=1, fill_value=np.nan)
+            card_faces_single = explode_image_merge.loc[:, column_check]
+        else:
+            card_faces_single: pd.DataFrame = pd.DataFrame(columns=column_check)
+    else:
+        print("card faces does not exist")
+        return pd.DataFrame(columns=column_check)
+    
+    if card_faces_multi.empty and card_faces_single.empty:
+        print("both frames empty")
+        return card_faces_single
 
     # Convert types to avoid future warning on concat
     column_types = {"id":"str", "object":"str", "name":"str", "image_uris.normal":"str", "mana_cost":"str", "oracle_text":"str", "cmc":"str", "flavor_text":"str", "layout":"str", "loyalty":"str", "oracle_id":"str", "power":"str", "toughness":"str"}
@@ -66,3 +85,4 @@ def get_type_line_data(cards: pd.DataFrame):
 if __name__ == "__main__":
     pd.set_option('display.max_colwidth', 100)
     new_cards = pd.read_json("test_data.json" ,orient="records")
+
