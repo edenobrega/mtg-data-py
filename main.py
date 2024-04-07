@@ -6,6 +6,7 @@ import datetime as dt
 import requests
 import json
 import mtg_transform as mt
+from bcpandas import to_sql as bc_to_sql, SqlCreds
 from sys import exit
 from os import mkdir, path, getenv, remove
 from dotenv import load_dotenv
@@ -135,9 +136,8 @@ def transform(new_cards, new_sets):
 
     cards_no_multi = cards.loc[~cards["card_faces"].notna(), ["id", "image_uris"]]
     images = pd.json_normalize(cards_no_multi["image_uris"])
-    cards = pd.merge(cards, images["normal"], left_index=True, right_index=True)
-    cards = cards.drop(["image_uris"], axis=1)
-    # rename columns to match db
+    cards = pd.merge(cards, images["normal"], left_index=True, right_index=True, how="left")
+    cards = cards.drop(["image_uris", "card_faces"], axis=1)
 
     log.info("Finished transform")
     return {
@@ -155,8 +155,9 @@ def load(data: dict):
     log.info("Beginning load . . .")
     
     # Set Type
-    log.info("%s adding new set types", result)
-    tf_settypes = data["set_types"].drop_duplicates().to_frame(name="name")      
+    # TODO: is the drop needed?
+    log.info("checking for new set types")  
+    tf_settypes = data["set_types"].to_frame(name="name")      
     db_settypes = get_from_db("SELECT [name] FROM [MTG].[SetType]")
     new_settypes = tf_settypes.loc[~tf_settypes["name"].isin(db_settypes["name"]), :]
     result = new_settypes.to_sql(
@@ -169,6 +170,7 @@ def load(data: dict):
     log.info("%s new set types added", result)
 
     # Sets
+    log.info("checking for new sets")
     sets_source_ids = data["sets"].drop_duplicates()
     db_sets = get_from_db("select [source_id] from mtg.[Set]")
     new_sets: pd.DataFrame = sets_source_ids.loc[~sets_source_ids["set_id"].isin(db_sets["source_id"])]
@@ -176,14 +178,14 @@ def load(data: dict):
         "set_id":"source_id",
         "set":"shorthand",
         "set_search_uri":"search_uri",
-        "set_type":"set_type_id"
+        "set_type":"set_type_id",
+        "set_name":"name"
     })
     settype_lookup = get_from_db("select [id], [name] from [MTG].[SetType]").set_index("name")
     settype_lookup["id"] = settype_lookup["id"].astype("str")
     settype_lookup = settype_lookup.to_dict()["id"]
     new_sets["set_type_id"] = new_sets["set_type_id"].replace(settype_lookup)
     new_sets["set_type_id"] = new_sets["set_type_id"].astype("int")
-
     result = new_sets.to_sql(
         schema="MTG",
         name="Set",
@@ -191,12 +193,89 @@ def load(data: dict):
         index=False,
         if_exists="append"
     )
+    log.info("%s new sets added", result)
 
     # Rarity
+    log.info("checking for new rarities")
+    db_rarities = get_from_db("select [name] from [MTG].[Rarity]")
+    new_rarities = data["rarities"].loc[~data["rarities"].isin(db_rarities["name"])]
+    new_rarities.name = "name"
+    result = new_rarities.to_sql(
+        schema="MTG",
+        name="Rarity",
+        con=engine,
+        index=False,
+        if_exists="append"
+    )
+    log.info("%s new rarities added", result)
 
     # Layout
+    log.info("checking for new layouts")
+    db_layouts = get_from_db("select [name] from [MTG].[Layout]")
+    new_layouts = data["layouts"].loc[~data["layouts"].isin(db_layouts["name"])]
+    new_layouts.name = "name"
+    result = new_layouts.to_sql(
+        schema="MTG",
+        name="Layout",
+        con=engine,
+        index=False,
+        if_exists="append"
+    )
+    log.info("%s new layouts added", result)
 
     # Card
+    log.info("checking for new cards")
+    db_card_ids = get_from_db("SELECT [source_id] FROM [MTG].[Card]")
+    new_cards: pd.DataFrame = data["cards"].loc[~data["cards"]["id"].isin(db_card_ids["source_id"])]
+
+    rarity_lookup = get_from_db("select [id], [name] from [MTG].[Rarity]").set_index("name")
+    layout_lookup = get_from_db("select [id], [name] from [MTG].[Layout]").set_index("name")
+    set_lookup = get_from_db("SELECT [id], [shorthand] FROM [MTG].[Set]").set_index("shorthand")
+    
+    rarity_lookup["id"] = rarity_lookup["id"].astype("str")
+    layout_lookup["id"] = layout_lookup["id"].astype("str")
+    set_lookup["id"] = set_lookup["id"].astype("str")
+
+    rarity_lookup = rarity_lookup.to_dict()["id"]
+    layout_lookup = layout_lookup.to_dict()["id"]
+    set_lookup = set_lookup.to_dict()["id"]
+
+    new_cards["rarity"] = new_cards["rarity"].replace(rarity_lookup)
+    new_cards["layout"] = new_cards["layout"].replace(layout_lookup)
+    new_cards["set"] = new_cards["set"].replace(set_lookup)
+
+    new_cards["rarity"] = new_cards["rarity"].astype("int")
+    new_cards["layout"] = new_cards["layout"].astype("int")
+    new_cards["set"] = new_cards["set"].astype("int")
+
+    new_cards["collector_number"] = new_cards["collector_number"].astype("str")
+    new_cards["power"] = new_cards["power"].astype("str")
+    new_cards["toughness"] = new_cards["toughness"].astype("str")
+
+    new_cards = new_cards.rename(columns={
+        "oracle_text":"text",
+        "flavor_text":"flavor",
+        "set": "card_set_id",
+        "id":"source_id",
+        "cmc":"converted_cost",
+        "normal":"image",
+        "rarity": "rarity_id",
+        "layout": "layout_id"
+    })
+
+    creds = SqlCreds.from_engine(engine)
+
+    result = bc_to_sql(
+        df=new_cards,
+        schema="MTG",
+        table_name="Card",
+        index=False,
+        if_exists="append",
+        creds=creds
+    )
+
+    # new_cards.loc[:, ["layout","rarity", "set"]] 
+    
 
     # Card Face
 
