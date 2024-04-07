@@ -265,7 +265,7 @@ def load(data: dict):
 
     creds = SqlCreds.from_engine(engine)
 
-    result = bc_to_sql(
+    bc_to_sql(
         df=new_cards,
         schema="MTG",
         table_name="Card",
@@ -273,12 +273,13 @@ def load(data: dict):
         if_exists="append",
         creds=creds
     )
-
-    # new_cards.loc[:, ["layout","rarity", "set"]] 
+    log.info("%s new cards added", new_cards.shape[0])
     
-
+    # TODO: only occurred to me now but, because faces and parts are nested, there is no way to figure out if a card did not load faces/parts properly without just loading it all again
     # Card Face
-
+    # card_faces
+    new_card_faces = data["card_faces"]
+    db_card_faces = get_from_db("SELECT [CardID], [OracleID] FROM [MTG].[CardFace]")
     # Card Part
 
     # Card Type
