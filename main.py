@@ -121,10 +121,10 @@ def transform(new_cards, new_sets):
 
     rarities = new_cards["rarity"].drop_duplicates()
     layouts = new_cards["layout"].drop_duplicates()
-    # This is done again below ?
+
     # card_types_lookup = new_cards["type_line"].str.split(" ").explode().drop_duplicates()
     # this then needs to be transformed into a list of the "id" column of each json object
-    card_parts = new_cards.loc[new_cards["all_parts"].isnull() == False, ["id", "all_parts"]]
+
 
     # Card Type Line
     # 1. Seperate card types by space, then explode, maintain card id
@@ -134,18 +134,7 @@ def transform(new_cards, new_sets):
     card_to_type_premap = pd.merge(card_typeline, card_typeline_lookup, left_index=True, right_index=True).loc[:, ["id", "type_line_y"]]
 
     card_faces = tl.get_card_faces(new_cards)
-
-    # Card Parts
-    card_parts_start = new_cards.loc[new_cards["all_parts"].notna() ,["id", "all_parts"]]
-    parts_explode = card_parts_start.explode("all_parts")
-    nested_parts = pd.DataFrame.from_dict(parts_explode["all_parts"])
-    nested_parts["object"] = nested_parts["all_parts"].str["object"]
-    nested_parts["component"] = nested_parts["all_parts"].str["component"]
-    nested_parts["id"] = nested_parts["all_parts"].str["id"]
-
-    card_parts = pd.merge(card_parts_start, nested_parts, left_index=True, right_index=True)
-    card_parts = card_parts.rename(columns={"id_x":"card_id", "id_y":"related_card"})
-    card_parts = card_parts.drop(["all_parts_x", "all_parts_y"], axis=1)
+    card_parts = tl.get_card_parts(new_cards)
 
     # Cards
     cards = new_cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
@@ -156,10 +145,9 @@ def transform(new_cards, new_sets):
     images = pd.json_normalize(cards_no_multi["image_uris"])
     cards = pd.merge(cards, images["normal"], left_index=True, right_index=True)
 
-    print(cards.head())
 
     # rename columns to match db
-    pass
+    log.info("Finished transform")
 
 def load():
     log.info("Beginning load . . .")
@@ -205,6 +193,5 @@ if __name__ == "__main__":
     engine = sa.create_engine("mssql+pyodbc://DESKTOP-UPNS42E\\SQLEXPRESS/tcgct-dev?driver=ODBC+Driver+17+for+SQL+Server")
     # this needs to also pass set data
     new_cards_frame, new_sets_frame  = extract()
-    print(new_cards_frame["id"].dtype)
     transform(new_cards_frame, new_sets_frame)
     # load()

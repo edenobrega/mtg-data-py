@@ -38,5 +38,26 @@ def get_card_faces(cards: pd.DataFrame):
     card_faces.drop(["normal","image_uris.normal"], axis=1, inplace=True)
     return card_faces
 
-new_cards = pd.read_json("test_data.json" ,orient="records")
-ty = get_card_faces(new_cards)
+# Extract certain columns
+def get_card_parts(cards: pd.DataFrame):
+    card_parts_start = cards.loc[cards["all_parts"].notna() ,["id", "all_parts"]]
+    parts_explode = card_parts_start.explode("all_parts")
+    nested_parts = pd.DataFrame.from_dict(parts_explode["all_parts"])
+    nested_parts["object"] = nested_parts["all_parts"].str["object"]
+    nested_parts["component"] = nested_parts["all_parts"].str["component"]
+    nested_parts["id"] = nested_parts["all_parts"].str["id"]
+
+    card_parts = pd.merge(card_parts_start, nested_parts, left_index=True, right_index=True)
+    card_parts = card_parts.rename(columns={"id_x":"card_id", "id_y":"related_card"})
+    card_parts = card_parts.drop(["all_parts_x", "all_parts_y"], axis=1)
+
+    return card_parts
+
+if __name__ == "__main__":
+    new_cards = pd.read_json("test_data.json" ,orient="records")
+    # df = get_card_parts(new_cards)
+
+
+
+card_types_lookup = new_cards["type_line"].str.split(" ").explode().drop_duplicates()
+# this then needs to be transformed into a list of the "id" column of each json object
