@@ -5,12 +5,11 @@ import logging
 import datetime as dt
 import requests
 import json
-import transform_lib as tl
+import mtg_transform as mt
 from sys import exit
 from os import mkdir, path, getenv, remove
 from dotenv import load_dotenv
 from time import sleep
-from collections import namedtuple
 # load new sets into db
 # onces thats done load it back into pandas
 # get new ids from there
@@ -123,14 +122,9 @@ def transform(new_cards, new_sets):
     rarities = new_cards["rarity"].drop_duplicates()
     layouts = new_cards["layout"].drop_duplicates()
 
-    # Card Type Line
-    card_typeline = new_cards.loc[:, ["id","type_line"]]
-    card_typeline_lookup = card_typeline["type_line"].str.split(" ").explode()
-    card_to_type_premap = pd.merge(card_typeline, card_typeline_lookup, left_index=True, right_index=True).loc[:, ["id", "type_line_y"]]
-    card_types_lookup = card_typeline_lookup.drop_duplicates()
-
-    card_faces = tl.get_card_faces(new_cards)
-    card_parts = tl.get_card_parts(new_cards)
+    type_line = mt.get_type_line_data(new_cards)
+    card_faces = mt.get_card_faces(new_cards)
+    card_parts = mt.get_card_parts(new_cards)
 
     # Cards
     cards = new_cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
@@ -139,9 +133,9 @@ def transform(new_cards, new_sets):
     cards_no_multi = cards.loc[~cards["card_faces"].notna(), ["id", "image_uris"]]
     images = pd.json_normalize(cards_no_multi["image_uris"])
     cards = pd.merge(cards, images["normal"], left_index=True, right_index=True)
-
+    cards = cards.drop(["image_uris"], axis=1)
     # rename columns to match db
-    type_line_tuple = namedtuple("type_line_tuple", "premap lookup")
+
     log.info("Finished transform")
     return {
         "cards": cards,
@@ -149,15 +143,28 @@ def transform(new_cards, new_sets):
         "card_parts": card_parts,
         "rarities": rarities,
         "layouts": layouts,
-        "type_line": type_line_tuple(card_to_type_premap, card_types_lookup),
+        "type_line": type_line,
         "sets": sets,
         "set_types": set_types
     }
 
 def load():
     log.info("Beginning load . . .")
-    # build lookup
-    # new_cards_frame["type_line"].str.split(" ").explode().drop_duplicates().reset_index(drop=True).to_dict()
+    
+
+    # Get all unique types
+
+    # Check these against currently in the db
+
+    # Add currently not existing ones to db
+
+    # Get all from db
+
+    # Get all types with linked card id
+
+    # mapping shennanigans 
+
+
     pass
 
 

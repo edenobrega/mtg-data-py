@@ -163,3 +163,5 @@ cython_debug/
 bulk_download.json
 test_data.json
 /logs
+testing.py
+notes.txt

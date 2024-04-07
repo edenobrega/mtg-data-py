@@ -1,5 +1,6 @@
 import pandas as pd
-pd.set_option('display.max_colwidth', 100)
+from collections import namedtuple
+
 
 # Some cards with two faces only have one image, and those images will be in the usual
 def get_card_faces(cards: pd.DataFrame):
@@ -53,11 +54,15 @@ def get_card_parts(cards: pd.DataFrame):
 
     return card_parts
 
+def get_type_line_data(cards: pd.DataFrame):
+    card_typeline = cards.loc[:, ["id","type_line"]]
+    card_typeline_lookup = card_typeline["type_line"].str.split(" ").explode()
+    card_to_type_premap = pd.merge(card_typeline, card_typeline_lookup, left_index=True, right_index=True).loc[:, ["id", "type_line_y"]]
+    card_types_lookup = card_typeline_lookup.drop_duplicates()
+    type_line_tuple = namedtuple("type_line_tuple", "premap lookup")
+
+    return type_line_tuple(card_to_type_premap, card_types_lookup)
+
 if __name__ == "__main__":
+    pd.set_option('display.max_colwidth', 100)
     new_cards = pd.read_json("test_data.json" ,orient="records")
-    # df = get_card_parts(new_cards)
-
-
-
-card_types_lookup = new_cards["type_line"].str.split(" ").explode().drop_duplicates()
-# this then needs to be transformed into a list of the "id" column of each json object
