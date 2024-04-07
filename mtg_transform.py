@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from collections import namedtuple
 
+# TODO: Add logging here
 
 # Some cards with two faces only have one image, and those images will be in the usual
 def get_card_faces(cards: pd.DataFrame):
