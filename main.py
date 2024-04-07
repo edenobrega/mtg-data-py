@@ -99,7 +99,6 @@ def extract():
 
             raw_card_data = []
             for uri in needs_update.loc[needs_update["card_count"] > 0, :]["search_uri"]:
-                print(uri)
                 cards = request_set_cards(uri, [])
                 raw_card_data = raw_card_data + cards
 
@@ -262,6 +261,14 @@ if __name__ == "__main__":
     LOAD_FROM_BULK = getenv("TCGCT_LOAD_FROM_BULK").upper() == "TRUE"
 
     engine = sa.create_engine("mssql+pyodbc://DESKTOP-UPNS42E\\SQLEXPRESS/tcgct-dev?driver=ODBC+Driver+17+for+SQL+Server")
+    # Get raw data, and get data for sets where our card count mismatch what the api gives us.
+    #       This is because cards for a new set are slowly revelead to us, and they are updated
+    #       in the api one by one, there is probably a more efficient way of doing this.
     new_cards_frame, new_sets_frame  = extract()
+
+    # Transform data into frames that require minimal transformation before loading
     data = transform(new_cards_frame, new_sets_frame)
+
+    # Remove existing data from dataframes and then push to the db, then get certain tables back
+    #       to create lookups and replace values in the dataframes to match this.
     # load(data)
