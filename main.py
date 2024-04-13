@@ -15,25 +15,9 @@ from time import sleep
 
 card_to_type_premap = []
 
-# data = pd.read_sql("select * from [MTG].[Rarity]", engine)
-
-# raw = {
-#     "name": ["rare","mythic","common"]
-# }
-# new_data = pd.DataFrame(raw)
-
-# data = data.loc[:, ["name"]]
-
-# new_rarities = pd.concat([new_data, data]).drop_duplicates(["name"], keep=False)
-
-
-# x = new_rarities.to_sql(
-#     schema="MTG",
-#     name="Rarity",
-#     con=engine,
-#     index=False,
-#     if_exists="append"
-# )
+def exit_as_failed():
+    log.critical("loader exiting as failed")
+    raise SystemExit
 
 def get_from_db(sql: str):
     return pd.read_sql(sql, engine)
@@ -52,10 +36,6 @@ def request_set_cards(_uri, data):
         data = request_set_cards(req_data["next_page"], data)
     return data
 
-# Load all from bulk file
-# or
-# check api to see if new set has released
-# check the card count for a set against the card count in the db
 def extract():
     log.info("Beginning extract . . .")
     try:
@@ -66,7 +46,7 @@ def extract():
             log.info("loading from bulk data file")
             if not path.exists(bulk_name):
                 log.critical("file does not exist")
-                exit()
+                exit_as_failed()
             card_frame = pd.read_json(bulk_name, orient='records')
             log.info("finished loading from bulk data file")
             bulk_sets = card_frame.loc[:, ["set", "set_name", "set_type", "set_search_uri", "set_id"]].drop_duplicates(keep="first")
@@ -179,7 +159,7 @@ def load(data: dict):
             index=False,
             if_exists="append"
         )
-        log.info("%s new set types added", result)
+        log.info("new set types added")
     else:
         log.info("no new set types found")
 
@@ -208,7 +188,7 @@ def load(data: dict):
             index=False,
             if_exists="append"
         )
-        log.info("%s new sets added", result)
+        log.info("new sets added")
     else:
         log.info("no new sets found")
 
@@ -229,7 +209,7 @@ def load(data: dict):
             index=False,
             if_exists="append"
         )
-        log.info("%s new rarities added", result)
+        log.info("new rarities added")
     else:
         log.info("no new rarities found")
 
@@ -246,7 +226,7 @@ def load(data: dict):
             index=False,
             if_exists="append"
         )
-        log.info("%s new layouts added", result)
+        log.info("new layouts added")
     else:
         log.info("no new layouts found")
 
@@ -310,7 +290,7 @@ def load(data: dict):
                 if_exists="append",
                 creds=creds
             )
-        log.info("%s new cards added", new_cards.shape[0])
+        log.info("new cards added")
     else:
         log.info("no new cards found")
 
@@ -338,7 +318,7 @@ def load(data: dict):
             index=False,
             if_exists="append"
         )
-        log.info("%s new card faces added",  result)
+        log.info("new card faces added",)
     else:
         log.info("no new card faces found")
 
@@ -367,12 +347,10 @@ def load(data: dict):
 
     pass
 
-
-data_frame = None
 if __name__ == "__main__":
     load_dotenv()
     bulk_name = "bulk_download.json"
-    bulk_name = "test_data.json"
+    # bulk_name = "test_data.json"
 
     if not path.isdir('logs'):
         mkdir('logs\\')
@@ -384,15 +362,24 @@ if __name__ == "__main__":
     log = logging.getLogger(__name__)
 
     for foreignLogger in logging.Logger.manager.loggerDict:
-        # if foreignLogger != __name__:
         if foreignLogger not in [__name__, 'mtg_transform']:
             logging.getLogger(foreignLogger).disabled = True
+
+    log.info("main.py started")
 
     if getenv("TCGCT_DOWNLOAD_BULK").upper() == "TRUE":
         log.info("downloading bulk data")
 
         bulk_catalog = "https://api.scryfall.com/bulk-data"
-        catalog = requests.get(bulk_catalog).json()
+        req: requests.Response = requests.get(bulk_catalog)
+        if req.status_code != 200:
+            log.critical("bulk data request failed : %s %s", req.status_code, req.reason)
+            exit_as_failed()
+        catalog = req.json()
+        if "data" not in catalog and "default_cards" not in catalog["data"]:
+            log.critical("bulk data reading failed, data to get bulk file noth found")
+            exit_as_failed()
+
         bulk_uri = next(obj["download_uri"] for obj in catalog["data"] if obj["type"] == "default_cards")
         bulk_data = requests.get(bulk_uri).json()
 
@@ -403,16 +390,70 @@ if __name__ == "__main__":
             json.dump(bulk_data, f, ensure_ascii=False, indent=4)   
 
     LOAD_FROM_BULK = getenv("TCGCT_LOAD_FROM_BULK").upper() == "TRUE"
+    DB_NAME = getenv("TCGCT_DB_NAME")    
+    CONN = getenv("TCGCT_CONNECTION_STRING").replace("##DB_NAME##", DB_NAME)
 
-    engine = sa.create_engine("mssql+pyodbc://DESKTOP-UPNS42E\\SQLEXPRESS/tcgct-dev?driver=ODBC+Driver+17+for+SQL+Server")
+    if CONN is None:
+        log.critical("no connection string defined")
+        exit_as_failed()
+
+    if DB_NAME is None:
+        log.critical("no db name defined")
+        exit_as_failed()
+
+    engine = sa.create_engine(CONN)
+    try:
+        log.debug("testing db connection")
+        with engine.connect() as conn:
+            conn.execute(sa.text("SELECT 1"))
+        log.debug("connection success")
+        log.debug("checking if tables exist")
+        with engine.connect() as conn:
+            sql = sa.text("""
+                            SET NOCOUNT ON
+                          
+                            DECLARE @tablenames TABLE([Name] NVARCHAR(25)) 
+                            INSERT INTO @tablenames VALUES
+                            ('CardPart'),
+                            ('Layout'),
+                            ('Set'),
+                            ('CardType'),
+                            ('SetType'),
+                            ('CardFace'),
+                            ('Card'),
+                            ('TypeLine'),
+                            ('Rarity')
+
+                            SELECT 1
+                            FROM
+                            (
+                                SELECT COUNT(1) as [Count]
+                                FROM [INFORMATION_SCHEMA].[TABLES] 
+                                WHERE [TABLE_SCHEMA] = 'MTG' 
+                                AND [TABLE_TYPE] = 'BASE TABLE'
+                                AND [TABLE_NAME] IN (SELECT [Name] FROM @tablenames)
+                                AND [TABLE_CATALOG] = :db_name 
+                            ) AS a
+                            WHERE a.[Count] = (SELECT COUNT(1) FROM @tablenames)
+                        """)
+            sql = sql.bindparams(db_name=DB_NAME)
+            schema_check = conn.execute(sql).one_or_none()
+            if schema_check is None:
+                log.critical("tables are missing from the schema")
+                exit_as_failed()
+            log.debug("tables exist")
+    except Exception as ex:
+        log.critical("failed to connect to db : %s", ex)
+        exit_as_failed()
+    
     # Get raw data, and get data for sets where our card count mismatch what the api gives us.
     #       This is because cards for a new set are slowly revelead to us, and they are updated
     #       in the api one by one, there is probably a more efficient way of doing this.
-    new_cards_frame, new_sets_frame  = extract()
+    # new_cards_frame, new_sets_frame  = extract()
 
     # Transform data into frames that require minimal transformation before loading
-    data = transform(new_cards_frame, new_sets_frame)
+    # data = transform(new_cards_frame, new_sets_frame)
 
     # Remove existing data from dataframes and then push to the db, then get certain tables back
     #       to create lookups and replace values in the dataframes to match this.
-    load(data)
+    # load(data)
