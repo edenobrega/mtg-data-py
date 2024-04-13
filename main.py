@@ -42,20 +42,27 @@ def extract():
         db_sets = get_from_db("SELECT [shorthand], [icon], [source_id], [release_date] FROM [MTG].[Set]")
         db_cards = get_from_db("SELECT [source_id] FROM [MTG].[Card]")
 
-        if LOAD_FROM_BULK:
+        if LOAD_FROM_LOCAL_BULK:
             log.info("loading from bulk data file")
-            if not path.exists(bulk_name):
-                log.critical("file does not exist")
+            if not path.exists(BULK_NAME):
+                log.critical("bulk file does not exist")
                 exit_as_failed()
-            card_frame = pd.read_json(bulk_name, orient='records')
+            card_frame = pd.read_json(BULK_NAME, orient='records')
             log.info("finished loading from bulk data file")
             bulk_sets = card_frame.loc[:, ["set", "set_name", "set_type", "set_search_uri", "set_id"]].drop_duplicates(keep="first")
             new_sets = bulk_sets.loc[~bulk_sets["set_id"].isin(db_sets["source_id"]), :]
         else:
             sets_api_uri = "https://api.scryfall.com/sets"
             log.info("requesting sets data from %s", sets_api_uri)
-            # TODO: handle potential errors
-            api_sets = requests.get(sets_api_uri).json()
+
+            sets_req: requests.Response = requests.get(sets_api_uri)
+            if sets_req.status_code != 200:
+                log.critical("sets data request failed : %s %s", sets_req.status_code, sets_req.reason)
+                exit_as_failed() 
+            api_sets = sets_req.json()
+            if "data" not in api_sets:
+                log.critical("no data object in response")
+                exit_as_failed() 
             api_frame = pd.DataFrame.from_dict(api_sets["data"])
 
             # Get all sets that dont exist in the db
@@ -94,7 +101,7 @@ def transform(new_cards, new_sets):
     log.info("Beginning transform . . .")
     
     set_types = new_sets["set_type"].drop_duplicates()
-    if LOAD_FROM_BULK:
+    if LOAD_FROM_LOCAL_BULK:
         # CERTAIN COLUMNS FOR SET DONT EXIST IF LOADED FROM BULK
         sets = new_sets.loc[:, ["set_name", "set", "set_search_uri", "set_type", "set_id"]]
         pass
@@ -349,8 +356,8 @@ def load(data: dict):
 
 if __name__ == "__main__":
     load_dotenv()
-    bulk_name = "bulk_download.json"
-    # bulk_name = "test_data.json"
+    BULK_NAME = "bulk_download.json"
+    # BULK_NAME = "test_data.json"
 
     if not path.isdir('logs'):
         mkdir('logs\\')
@@ -383,13 +390,13 @@ if __name__ == "__main__":
         bulk_uri = next(obj["download_uri"] for obj in catalog["data"] if obj["type"] == "default_cards")
         bulk_data = requests.get(bulk_uri).json()
 
-        if path.exists(bulk_name):
-            remove(bulk_name)
+        if path.exists(BULK_NAME):
+            remove(BULK_NAME)
 
-        with open(bulk_name, 'x', encoding='utf-8') as f:
+        with open(BULK_NAME, 'x', encoding='utf-8') as f:
             json.dump(bulk_data, f, ensure_ascii=False, indent=4)   
 
-    LOAD_FROM_BULK = getenv("TCGCT_LOAD_FROM_BULK").upper() == "TRUE"
+    LOAD_FROM_LOCAL_BULK = getenv("TCGCT_LOAD_FROM_LOCAL_BULK").upper() == "TRUE"
     DB_NAME = getenv("TCGCT_DB_NAME")    
     CONN = getenv("TCGCT_CONNECTION_STRING").replace("##DB_NAME##", DB_NAME)
 
@@ -449,11 +456,12 @@ if __name__ == "__main__":
     # Get raw data, and get data for sets where our card count mismatch what the api gives us.
     #       This is because cards for a new set are slowly revelead to us, and they are updated
     #       in the api one by one, there is probably a more efficient way of doing this.
-    # new_cards_frame, new_sets_frame  = extract()
+    new_cards_frame, new_sets_frame  = extract()
 
     # Transform data into frames that require minimal transformation before loading
-    # data = transform(new_cards_frame, new_sets_frame)
+    data = transform(new_cards_frame, new_sets_frame)
 
     # Remove existing data from dataframes and then push to the db, then get certain tables back
     #       to create lookups and replace values in the dataframes to match this.
-    # load(data)
+    load(data)
+
