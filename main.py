@@ -11,7 +11,6 @@ from sys import exit
 from os import mkdir, path, getenv, remove
 from dotenv import load_dotenv
 from time import sleep
-# TODO: Increase replace speed https://stackoverflow.com/questions/41985566/pandas-replace-dictionary-slowness
 
 card_to_type_premap = []
 
@@ -83,11 +82,13 @@ def extract():
             needs_update = pd.merge(api_counts, db_set_counts, left_on="code", right_on="Shorthand", how="left")
             needs_update = needs_update.loc[needs_update["db_count"] != needs_update["card_count"], :]
 
+            log.info("getting card data from requests")
             raw_card_data = []
             for uri in needs_update.loc[needs_update["card_count"] > 0, :]["search_uri"]:
                 cards = request_set_cards(uri, [])
                 raw_card_data = raw_card_data + cards
 
+            log.info("finished getting card data from requests")
             card_frame = pd.DataFrame.from_dict(raw_card_data)
     except Exception as ex:
         log.exception("error during extract")
@@ -104,9 +105,9 @@ def transform(new_cards, new_sets):
     if LOAD_FROM_LOCAL_BULK:
         # CERTAIN COLUMNS FOR SET DONT EXIST IF LOADED FROM BULK
         sets = new_sets.loc[:, ["set_name", "set", "set_search_uri", "set_type", "set_id"]]
-        pass
     else:
-        raise Exception("not yet implemented")
+        sets: pd.DataFrame = new_sets.loc[:, ["name", "code", "search_uri", "set_type", "id"]]
+        sets = sets.rename(columns={"name":"set_name", "code":"set", "search_uri":"set_search_uri", "id":"set_id"})
 
     if new_cards.shape[0] == 0:
         log.info("no new cards found")
@@ -159,7 +160,7 @@ def load(data: dict):
     db_settypes = get_from_db("SELECT [name] FROM [MTG].[SetType]")
     new_settypes = tf_settypes.loc[~tf_settypes["name"].isin(db_settypes["name"]), :]
     if new_settypes.shape[0] > 0:
-        result = new_settypes.to_sql(
+        new_settypes.to_sql(
             schema="MTG",
             name="SetType",
             con=engine,
@@ -186,9 +187,9 @@ def load(data: dict):
         settype_lookup = get_from_db("select [id], [name] from [MTG].[SetType]").set_index("name")
         settype_lookup["id"] = settype_lookup["id"].astype("str")
         settype_lookup = settype_lookup.to_dict()["id"]
-        new_sets["set_type_id"] = new_sets["set_type_id"].replace(settype_lookup)
+        new_sets["set_type_id"] = new_sets["set_type_id"].map(settype_lookup)
         new_sets["set_type_id"] = new_sets["set_type_id"].astype("int")
-        result = new_sets.to_sql(
+        new_sets.to_sql(
             schema="MTG",
             name="Set",
             con=engine,
@@ -209,7 +210,7 @@ def load(data: dict):
     new_rarities = data["rarities"].loc[~data["rarities"].isin(db_rarities["name"])]
     if new_rarities.shape[0] > 0:
         new_rarities.name = "name"
-        result = new_rarities.to_sql(
+        new_rarities.to_sql(
             schema="MTG",
             name="Rarity",
             con=engine,
@@ -226,7 +227,7 @@ def load(data: dict):
     new_layouts = data["layouts"].loc[~data["layouts"].isin(db_layouts["name"])]
     if new_layouts.shape[0] > 0:
         new_layouts.name = "name"
-        result = new_layouts.to_sql(
+        new_layouts.to_sql(
             schema="MTG",
             name="Layout",
             con=engine,
@@ -239,7 +240,7 @@ def load(data: dict):
 
     # Card
     log.info("checking for new cards")
-    db_card_ids = get_from_db("SELECT [source_id] FROM [MTG].[Card]")
+    db_card_ids = get_from_db("SELECT [source_id], [id] FROM [MTG].[Card]")
     new_cards: pd.DataFrame = data["cards"].loc[~data["cards"]["id"].isin(db_card_ids["source_id"])]
     if new_cards.shape[0] > 0:
         rarity_lookup = get_from_db("select [id], [name] from [MTG].[Rarity]").set_index("name")
@@ -254,17 +255,17 @@ def load(data: dict):
         layout_lookup = layout_lookup.to_dict()["id"]
         set_lookup = set_lookup.to_dict()["id"]
 
-        new_cards["rarity"] = new_cards["rarity"].replace(rarity_lookup)
-        new_cards["layout"] = new_cards["layout"].replace(layout_lookup)
-        new_cards["set"] = new_cards["set"].replace(set_lookup)
+        new_cards["rarity"] = new_cards["rarity"].map(rarity_lookup)
+        new_cards["layout"] = new_cards["layout"].map(layout_lookup)
+        new_cards["set"] = new_cards["set"].map(set_lookup)
 
         new_cards["rarity"] = new_cards["rarity"].astype("int")
         new_cards["layout"] = new_cards["layout"].astype("int")
         new_cards["set"] = new_cards["set"].astype("int")
 
         new_cards["collector_number"] = new_cards["collector_number"].astype("str")
-        new_cards["power"] = new_cards["power"].astype("str")
-        new_cards["toughness"] = new_cards["toughness"].astype("str")
+        new_cards["power"] = new_cards["power"].astype("str").map({"nan":""})
+        new_cards["toughness"] = new_cards["toughness"].astype("str").map({"nan":""})
 
         new_cards = new_cards.rename(columns={
             "oracle_text":"text",
@@ -278,10 +279,10 @@ def load(data: dict):
         })
 
         creds = SqlCreds.from_engine(engine)
-
-        # Faster for bulk inserts
-        if new_cards.shape[0] < 500:
-            result = new_cards.to_sql(
+        log.info("adding new cards . . .")
+        # FIXME: for some reason if theres not a lot of objects in the frame, it wont push it to the db and wont error, need to investigate
+        if new_cards.shape[0] < 1000:
+            new_cards.to_sql(
                 schema="MTG",
                 name="Card",
                 con=engine,
@@ -309,7 +310,7 @@ def load(data: dict):
     if new_card_faces.shape[0] > 0:
         # map the datbase card id to the object 
         db_card_dict = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
-        new_card_faces["id"] = new_card_faces["id"].replace(db_card_dict)
+        new_card_faces["id"] = new_card_faces["id"].map(db_card_dict)
         new_card_faces["id"] = new_card_faces["id"].astype("int")
         new_card_faces = new_card_faces.drop(["index"], axis=1)
         new_card_faces = new_card_faces.rename(columns={
@@ -318,27 +319,69 @@ def load(data: dict):
             "flavor_text": "FlavourText",
             "oracle_id": "OracleID"
         })
-        result = new_card_faces.to_sql(
+        log.info("adding new card faces . . .")
+        new_card_faces.to_sql(
             schema="MTG",
             name="CardFace",
             con=engine,
             index=False,
             if_exists="append"
         )
-        log.info("new card faces added",)
+        log.info("new card faces added")
     else:
         log.info("no new card faces found")
 
     # Card Part
+    log.info("checking for new card parts")
+    db_card_parts = get_from_db("""
+                                SELECT cid.source_id AS [card_id], [object], [component], rci.source_id AS [related_card]
+                                FROM [MTG].[CardPart] AS cpa
+                                JOIN [MTG].[Card] AS cid ON cpa.CardID = cid.id
+                                JOIN [MTG].[Card] AS rci ON rci.source_id = cpa.RelatedCardID
+                                """)
+    new_card_parts = pd.concat([data["card_parts"], db_card_parts]).drop_duplicates(keep=False)
+
+    if "db_card_dict" not in locals():
+        db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
+
+    new_card_parts["card_id"] = new_card_parts["card_id"].map(db_card_dict)
+    new_card_parts["related_card"] = new_card_parts["related_card"].map(db_card_dict)
+
+    # bc_to_sql requires exact match of column names
+    new_card_parts = new_card_parts.rename(columns={
+        "card_id": "CardID",
+        "related_card": "RelatedCardID",
+        "component": "Component",
+        "object": "Object"
+    })
+
+    if new_card_parts.shape[0] > 0:
+        log.info("adding new card parts . . .")
+        if new_card_parts.shape[0] < 1000:
+            new_card_parts.to_sql(
+                schema="MTG",
+                name="CardPart",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
+        else:
+            bc_to_sql(
+                df=new_card_parts,
+                schema="MTG",
+                table_name="CardPart",
+                index=False,
+                if_exists="append",
+                creds=creds
+            )
+        log.info("new card parts added")
+    else:
+        log.info("no new card parts found")
 
     # Card Type
 
+
     # Type Line
-
-
-
-
-
 
     # Get all unique types
 
@@ -456,7 +499,7 @@ if __name__ == "__main__":
     # Get raw data, and get data for sets where our card count mismatch what the api gives us.
     #       This is because cards for a new set are slowly revelead to us, and they are updated
     #       in the api one by one, there is probably a more efficient way of doing this.
-    new_cards_frame, new_sets_frame  = extract()
+    new_cards_frame, new_sets_frame = extract()
 
     # Transform data into frames that require minimal transformation before loading
     data = transform(new_cards_frame, new_sets_frame)
