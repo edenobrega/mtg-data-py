@@ -12,8 +12,6 @@ from os import mkdir, path, getenv, remove
 from dotenv import load_dotenv
 from time import sleep
 
-card_to_type_premap = []
-
 def exit_as_failed():
     log.critical("loader exiting as failed")
     raise SystemExit
@@ -151,6 +149,8 @@ def transform(new_cards, new_sets):
         "set_types": set_types
     }
 
+# FIXME: Replace use of BCPandas with just the library, due to there be lots of strange interactions with how it pushes data to db
+#           https://bcp.readthedocs.io/en/latest/
 def load(data: dict):
     log.info("Beginning load . . .")
     
@@ -264,6 +264,8 @@ def load(data: dict):
         new_cards["set"] = new_cards["set"].astype("int")
 
         new_cards["collector_number"] = new_cards["collector_number"].astype("str")
+        # bcpandas automatically assigns nan to ""
+        # TODO: check if the non bcpandas insert does the same
         new_cards["power"] = new_cards["power"].astype("str").map({"nan":""})
         new_cards["toughness"] = new_cards["toughness"].astype("str").map({"nan":""})
 
@@ -280,7 +282,6 @@ def load(data: dict):
 
         creds = SqlCreds.from_engine(engine)
         log.info("adding new cards . . .")
-        # FIXME: for some reason if theres not a lot of objects in the frame, it wont push it to the db and wont error, need to investigate
         if new_cards.shape[0] < 1000:
             new_cards.to_sql(
                 schema="MTG",
@@ -378,24 +379,58 @@ def load(data: dict):
     else:
         log.info("no new card parts found")
 
-    # Card Type
+    # Card Types
+    db_card_types = get_from_db("SELECT [name] FROM [MTG].[CardType]")
+    new_card_types: pd.DataFrame = data["type_line"].lookup.loc[~data["type_line"].lookup["type_line"].isin(db_card_types["name"])]
+    if new_card_types.shape[0] > 0:
+        new_card_types = new_card_types.drop(["index"], axis=1)
+        new_card_types = new_card_types.rename(columns={"type_line":"name"})
+        log.info("adding new card types . . .")
+        new_card_types.to_sql(
+            schema="MTG",
+            name="CardType",
+            con=engine,
+            index=False,
+            if_exists="append"
+        )
+        log.info("new card types added")
+    else:
+        log.info("no new card types to add")
 
+    # Card Type Line
+    if "db_card_dict" not in locals():
+        db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
 
-    # Type Line
-
-    # Get all unique types
-
-    # Check these against currently in the db
-
-    # Add currently not existing ones to db
-
-    # Get all from db
-
-    # Get all types with linked card id
-
-    # mapping shennanigans 
-
-    pass
+    db_card_types: pd.DataFrame = get_from_db("SELECT [id], [name] FROM [MTG].[CardType]").set_index("name").to_dict()["id"]
+    if data["type_line"].premap.shape[0] > 0:
+        card_to_type: pd.DataFrame = data["type_line"].premap
+        card_to_type["order"] = card_to_type.groupby("id").cumcount().add(1)
+        card_to_type["id"] = card_to_type["id"].map(db_card_dict)
+        card_to_type["type_name"] = card_to_type["type_name"].map(db_card_types)
+        card_to_type = card_to_type.rename(columns={
+            "id":"card_id",
+            "type_name":"type_id"
+        })
+        log.info("adding new card type lines . . .")
+        if card_to_type.shape[0] < 1000:
+            card_to_type.to_sql(
+                schema="MTG",
+                name="TypeLine",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
+        else:
+            bc_to_sql(
+                df=card_to_type,
+                schema="MTG",
+                table_name="TypeLine",
+                index=False,
+                if_exists="append",
+                creds=creds
+            )
+        log.info("new card type lines added")
+    log.info("finished loading data")
 
 if __name__ == "__main__":
     load_dotenv()
@@ -506,5 +541,5 @@ if __name__ == "__main__":
 
     # Remove existing data from dataframes and then push to the db, then get certain tables back
     #       to create lookups and replace values in the dataframes to match this.
-    load(data)
+    # load(data)
 

@@ -89,7 +89,8 @@ def get_type_line_data(cards: pd.DataFrame):
     card_typeline = cards.loc[:, ["id","type_line"]]
     card_typeline_lookup = card_typeline["type_line"].str.split(" ").explode()
     card_to_type_premap = pd.merge(card_typeline, card_typeline_lookup, left_index=True, right_index=True).loc[:, ["id", "type_line_y"]]
-    card_types_lookup = card_typeline_lookup.drop_duplicates()
+    card_to_type_premap = card_to_type_premap.rename(columns={"type_line_y":"type_name"})
+    card_types_lookup = card_typeline_lookup.drop_duplicates().reset_index().drop(["index"],axis=1) 
     type_line_tuple = namedtuple("type_line_tuple", "premap lookup")
 
     log.info("finished preparing type line data")
@@ -97,5 +98,4 @@ def get_type_line_data(cards: pd.DataFrame):
 
 if __name__ == "__main__":
     pd.set_option('display.max_colwidth', 100)
-    new_cards = pd.read_json("test_data.json" ,orient="records")
-
+    new_cards = pd.read_json("test_data.json", orient="records")
