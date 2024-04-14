@@ -4,8 +4,6 @@ import logging
 from collections import namedtuple
 log = logging.getLogger("__main__")
 
-# TODO: Add logging here
-
 # Some cards with two faces only have one image, and those images will be in the usual
 def get_card_faces(cards: pd.DataFrame):
     log.info("preparing card faces")
@@ -82,8 +80,6 @@ def get_card_parts(cards: pd.DataFrame):
     card_parts = pd.merge(card_parts_start, nested_parts, left_index=True, right_index=True)
     card_parts = card_parts.rename(columns={"id_x":"card_id", "id_y":"related_card"})
     card_parts = card_parts.drop(["all_parts_x", "all_parts_y"], axis=1)
-
-    _ = card_parts.columns
 
     log.info("finished preparing card parts")
     return card_parts
