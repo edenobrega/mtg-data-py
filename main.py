@@ -6,7 +6,6 @@ import datetime as dt
 import requests
 import json
 import mtg_transform as mt
-from bcpandas import to_sql as bc_to_sql, SqlCreds
 from sys import exit
 from os import mkdir, path, getenv, remove
 from dotenv import load_dotenv
@@ -150,13 +149,14 @@ def transform(new_cards, new_sets):
     }
 
 # FIXME: Replace use of BCPandas with just the library, due to there be lots of strange interactions with how it pushes data to db
+#           also it would just be interesting
 #           https://bcp.readthedocs.io/en/latest/
 def load(data: dict):
     log.info("Beginning load . . .")
     
     # Set Type
     log.info("checking for new set types")  
-    tf_settypes = data["set_types"].to_frame(name="name")      
+    tf_settypes = data["set_types"].copy().to_frame(name="name")
     db_settypes = get_from_db("SELECT [name] FROM [MTG].[SetType]")
     new_settypes = tf_settypes.loc[~tf_settypes["name"].isin(db_settypes["name"]), :]
     if new_settypes.shape[0] > 0:
@@ -173,7 +173,7 @@ def load(data: dict):
 
     # Sets
     log.info("checking for new sets")
-    sets_source_ids = data["sets"].drop_duplicates()
+    sets_source_ids = data["sets"].copy().drop_duplicates()
     db_sets = get_from_db("select [source_id] from mtg.[Set]")
     new_sets: pd.DataFrame = sets_source_ids.loc[~sets_source_ids["set_id"].isin(db_sets["source_id"])]
     if new_sets.shape[0] > 0:
@@ -207,7 +207,7 @@ def load(data: dict):
     # Rarity
     log.info("checking for new rarities")
     db_rarities = get_from_db("select [name] from [MTG].[Rarity]")
-    new_rarities = data["rarities"].loc[~data["rarities"].isin(db_rarities["name"])]
+    new_rarities = data["rarities"].copy().loc[~data["rarities"].isin(db_rarities["name"])]
     if new_rarities.shape[0] > 0:
         new_rarities.name = "name"
         new_rarities.to_sql(
@@ -224,7 +224,7 @@ def load(data: dict):
     # Layout
     log.info("checking for new layouts")
     db_layouts = get_from_db("select [name] from [MTG].[Layout]")
-    new_layouts = data["layouts"].loc[~data["layouts"].isin(db_layouts["name"])]
+    new_layouts = data["layouts"].copy().loc[~data["layouts"].isin(db_layouts["name"])]
     if new_layouts.shape[0] > 0:
         new_layouts.name = "name"
         new_layouts.to_sql(
@@ -241,7 +241,7 @@ def load(data: dict):
     # Card
     log.info("checking for new cards")
     db_card_ids = get_from_db("SELECT [source_id], [id] FROM [MTG].[Card]")
-    new_cards: pd.DataFrame = data["cards"].loc[~data["cards"]["id"].isin(db_card_ids["source_id"])]
+    new_cards: pd.DataFrame = data["cards"].copy().loc[~data["cards"]["id"].isin(db_card_ids["source_id"])]
     if new_cards.shape[0] > 0:
         rarity_lookup = get_from_db("select [id], [name] from [MTG].[Rarity]").set_index("name")
         layout_lookup = get_from_db("select [id], [name] from [MTG].[Layout]").set_index("name")
@@ -280,25 +280,15 @@ def load(data: dict):
             "layout": "layout_id"
         })
 
-        creds = SqlCreds.from_engine(engine)
         log.info("adding new cards . . .")
-        if new_cards.shape[0] < 1000:
-            new_cards.to_sql(
-                schema="MTG",
-                name="Card",
-                con=engine,
-                index=False,
-                if_exists="append"
-            )
-        else:
-            bc_to_sql(
-                df=new_cards,
-                schema="MTG",
-                table_name="Card",
-                index=False,
-                if_exists="append",
-                creds=creds
-            )
+        new_cards.to_sql(
+            schema="MTG",
+            name="Card",
+            con=engine,
+            index=False,
+            if_exists="append"
+        )
+
         log.info("new cards added")
     else:
         log.info("no new cards found")
@@ -307,7 +297,7 @@ def load(data: dict):
     db_card_faces = get_from_db("SELECT [CardID] FROM [MTG].[CardFace]")
     # because these are nested in a obj, you would have to reload a card again to check if its face exists, so the chances are we dont need to check for duplicates, but will do so anyway
     #       in case of trying to reload specific cards by deleting them from the db  i guess
-    new_card_faces: pd.DataFrame = data["card_faces"].loc[~data["card_faces"]["id"].isin(db_card_faces["CardID"])]
+    new_card_faces: pd.DataFrame = data["card_faces"].copy().loc[~data["card_faces"]["id"].isin(db_card_faces["CardID"])]
     if new_card_faces.shape[0] > 0:
         # map the datbase card id to the object 
         db_card_dict = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
@@ -338,9 +328,9 @@ def load(data: dict):
                                 SELECT cid.source_id AS [card_id], [object], [component], rci.source_id AS [related_card]
                                 FROM [MTG].[CardPart] AS cpa
                                 JOIN [MTG].[Card] AS cid ON cpa.CardID = cid.id
-                                JOIN [MTG].[Card] AS rci ON rci.source_id = cpa.RelatedCardID
+                                JOIN [MTG].[Card] AS rci ON rci.id = cpa.RelatedCardID
                                 """)
-    new_card_parts = pd.concat([data["card_parts"], db_card_parts]).drop_duplicates(keep=False)
+    new_card_parts = pd.concat([data["card_parts"].copy(), db_card_parts]).drop_duplicates(keep=False)
 
     if "db_card_dict" not in locals():
         db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
@@ -358,32 +348,22 @@ def load(data: dict):
 
     if new_card_parts.shape[0] > 0:
         log.info("adding new card parts . . .")
-        if new_card_parts.shape[0] < 1000:
-            new_card_parts.to_sql(
-                schema="MTG",
-                name="CardPart",
-                con=engine,
-                index=False,
-                if_exists="append"
-            )
-        else:
-            bc_to_sql(
-                df=new_card_parts,
-                schema="MTG",
-                table_name="CardPart",
-                index=False,
-                if_exists="append",
-                creds=creds
-            )
+        new_card_parts.to_sql(
+            schema="MTG",
+            name="CardPart",
+            con=engine,
+            index=False,
+            if_exists="append"
+        )
+
         log.info("new card parts added")
     else:
         log.info("no new card parts found")
 
     # Card Types
     db_card_types = get_from_db("SELECT [name] FROM [MTG].[CardType]")
-    new_card_types: pd.DataFrame = data["type_line"].lookup.loc[~data["type_line"].lookup["type_line"].isin(db_card_types["name"])]
+    new_card_types: pd.DataFrame = data["type_line"].lookup.loc[~data["type_line"].lookup["type_line"].isin(db_card_types["name"])].copy()
     if new_card_types.shape[0] > 0:
-        new_card_types = new_card_types.drop(["index"], axis=1)
         new_card_types = new_card_types.rename(columns={"type_line":"name"})
         log.info("adding new card types . . .")
         new_card_types.to_sql(
@@ -403,32 +383,25 @@ def load(data: dict):
 
     db_card_types: pd.DataFrame = get_from_db("SELECT [id], [name] FROM [MTG].[CardType]").set_index("name").to_dict()["id"]
     if data["type_line"].premap.shape[0] > 0:
-        card_to_type: pd.DataFrame = data["type_line"].premap
+        card_to_type: pd.DataFrame = data["type_line"].premap.copy()
         card_to_type["order"] = card_to_type.groupby("id").cumcount().add(1)
         card_to_type["id"] = card_to_type["id"].map(db_card_dict)
-        card_to_type["type_name"] = card_to_type["type_name"].map(db_card_types)
+        card_to_type["type_id"] = card_to_type["type_name"].map(db_card_types)
+        card_to_type = card_to_type.drop(["type_name"], axis=1)
         card_to_type = card_to_type.rename(columns={
             "id":"card_id",
             "type_name":"type_id"
         })
+
         log.info("adding new card type lines . . .")
-        if card_to_type.shape[0] < 1000:
-            card_to_type.to_sql(
-                schema="MTG",
-                name="TypeLine",
-                con=engine,
-                index=False,
-                if_exists="append"
-            )
-        else:
-            bc_to_sql(
-                df=card_to_type,
-                schema="MTG",
-                table_name="TypeLine",
-                index=False,
-                if_exists="append",
-                creds=creds
-            )
+        card_to_type.to_sql(
+            schema="MTG",
+            name="TypeLine",
+            con=engine,
+            index=False,
+            if_exists="append"
+        )
+
         log.info("new card type lines added")
     log.info("finished loading data")
 
@@ -541,5 +514,5 @@ if __name__ == "__main__":
 
     # Remove existing data from dataframes and then push to the db, then get certain tables back
     #       to create lookups and replace values in the dataframes to match this.
-    # load(data)
+    load(data)
 
