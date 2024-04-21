@@ -128,9 +128,9 @@ def transform(new_cards, new_sets):
     cards = new_cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
                               "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris"]]
 
-    cards_no_multi: pd.DataFrame = cards.loc[~cards["card_faces"].notna(), ["id", "image_uris"]]
+    cards_no_multi: pd.DataFrame = cards.loc[cards["card_faces"].isna(), ["id", "image_uris"]]
     if cards_no_multi.empty == False:
-        images = pd.json_normalize(cards_no_multi["image_uris"])
+        images = pd.json_normalize(cards_no_multi["image_uris"]).set_index(cards_no_multi.index)
         cards = pd.merge(cards, images["normal"], left_index=True, right_index=True, how="left")
     cards = cards.drop(["image_uris", "card_faces"], axis=1)
     
@@ -264,10 +264,11 @@ def load(data: dict):
         new_cards["set"] = new_cards["set"].astype("int")
 
         new_cards["collector_number"] = new_cards["collector_number"].astype("str")
-        # bcpandas automatically assigns nan to ""
-        # TODO: check if the non bcpandas insert does the same
-        new_cards["power"] = new_cards["power"].astype("str").map({"nan":""})
-        new_cards["toughness"] = new_cards["toughness"].astype("str").map({"nan":""})
+        # TODO: move this into its own reusable function
+        new_cards["power"] = np.where(pd.isnull(new_cards["power"]),new_cards["power"],new_cards["power"].astype("str"))
+        new_cards["toughness"] = np.where(pd.isnull(new_cards["toughness"]),new_cards["toughness"],new_cards["toughness"].astype("str"))
+
+        new_cards.loc[new_cards["mana_cost"] == "", "mana_cost"] = pd.NA
 
         new_cards = new_cards.rename(columns={
             "oracle_text":"text",

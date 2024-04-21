@@ -16,7 +16,7 @@ def get_card_faces(cards: pd.DataFrame):
             face_explode = card_faces_multi_raw.explode("card_faces")
             faces_norm = pd.json_normalize(face_explode["card_faces"]).set_index(face_explode.index)
             with_id = pd.merge(face_explode, faces_norm, left_index=True, right_index=True, how="left")
-            if "oraclie_id_x" in with_id:
+            if "oracle_id_x" in with_id:
                 with_id["oracle_id_x"] = with_id["oracle_id_x"].fillna(with_id["oracle_id_y"])
                 with_id = with_id.drop(["oracle_id_y"], axis=1)
                 with_id = with_id.rename(columns={ "oracle_id_x":"oracle_id" })
@@ -46,9 +46,19 @@ def get_card_faces(cards: pd.DataFrame):
         log.warning("no card faces found")
         return card_faces_single
 
+
     # Convert types to avoid future warning on concat
     log.debug("casting columns")
-    column_types = {"id":"str", "object":"str", "name":"str", "image_uris.normal":"str", "mana_cost":"str", "oracle_text":"str", "cmc":"Int64", "flavor_text":"str", "loyalty":"str", "oracle_id":"str", "power":"str", "toughness":"str"}
+
+    card_faces_multi["power"] = np.where(pd.isnull(card_faces_multi["power"]),card_faces_multi["power"],card_faces_multi["power"].astype("str"))
+    card_faces_multi["toughness"] = np.where(pd.isnull(card_faces_multi["toughness"]),card_faces_multi["toughness"],card_faces_multi["toughness"].astype("str"))
+    card_faces_multi["loyalty"] = np.where(pd.isnull(card_faces_multi["loyalty"]),card_faces_multi["loyalty"],card_faces_multi["loyalty"].astype("str"))
+    card_faces_multi["flavor_text"] = np.where(pd.isnull(card_faces_multi["flavor_text"]),card_faces_multi["flavor_text"],card_faces_multi["flavor_text"].astype("str"))
+
+    card_faces_multi.loc[card_faces_multi["oracle_text"] == "", "oracle_text"] = pd.NA
+    card_faces_multi.loc[card_faces_multi["mana_cost"] == "", "mana_cost"] = pd.NA
+
+    column_types = {"id":"str", "object":"str", "name":"str", "image_uris.normal":"str", "cmc":"Int64", "oracle_id":"str"}
     card_faces_multi = card_faces_multi.astype(column_types)
     del column_types["image_uris.normal"]
     column_types["normal"] = "str"
