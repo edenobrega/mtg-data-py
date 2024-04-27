@@ -165,4 +165,7 @@ test_data.json
 /logs
 testing.py
 notes.txt
-
+/TestData/logs
+old_old_old_old.py
+tests.py
+mtg_transform.py
