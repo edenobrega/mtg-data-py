@@ -179,10 +179,18 @@ def load_data() -> pd.DataFrame:
     return card_frame, sets_frame
 
 # Ensure sure that all required columns are present
-def prepare_card_frame(cards: pd.DataFrame, sets_frame: pd.DataFrame) -> pd.DataFrame:
-    pass
+def prepare_card_frame(_cards: pd.DataFrame, sets_frame: pd.DataFrame) -> pd.DataFrame:
+    cards: pd.DataFrame = None
+    faces: pd.DataFrame = None
+    parts: pd.DataFrame = None
+    type_lines: pd.DataFrame = None
+    types: pd.DataFrame = None
+    rarities = _cards["rarity"].drop_duplicates()
+    layouts = _cards["layout"].drop_duplicates()
 
-def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame):
+    return cards, faces, parts, type_lines, types, rarities, layouts
+
+def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, parts: pd.DataFrame, type_lines: pd.DataFrame, types: pd.DataFrame, rarities: pd.Series, layouts: pd.Series):
     log.info("Beginning load . . .")
     
     # Set Type
@@ -231,6 +239,40 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame):
     else:
         log.info("no new sets found")
 
+    # Rarity
+    log.info("checking for new rarities")
+    db_rarities = get_from_db("select [name] from [MTG].[Rarity]")
+    new_rarities = rarities.copy().loc[~rarities.isin(db_rarities["name"])]
+    if new_rarities.shape[0] > 0:
+        new_rarities.name = "name"
+        new_rarities.to_sql(
+            schema="MTG",
+            name="Rarity",
+            con=engine,
+            index=False,
+            if_exists="append"
+        )
+        log.info("new rarities added")
+    else:
+        log.info("no new rarities found")
+
+    # Layout
+    log.info("checking for new layouts")
+    db_layouts = get_from_db("select [name] from [MTG].[Layout]")
+    new_layouts = layouts.copy().loc[~layouts.isin(db_layouts["name"])]
+    if new_layouts.shape[0] > 0:
+        new_layouts.name = "name"
+        new_layouts.to_sql(
+            schema="MTG",
+            name="Layout",
+            con=engine,
+            index=False,
+            if_exists="append"
+        )
+        log.info("new layouts added")
+    else:
+        log.info("no new layouts found")
+
 
 if __name__ == "__main__":
     load_dotenv()
@@ -273,6 +315,6 @@ if __name__ == "__main__":
 
     engine = create_connection(CONN, DB_NAME)
 
-    cards, sets = load_data()
-    x = prepare_card_frame(cards, sets)
-    save_to_db(cards, sets)
+    cards_raw, sets = load_data()
+    cards, faces, parts, type_lines, types, rarities, layouts = prepare_card_frame(cards_raw, sets)
+    save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
