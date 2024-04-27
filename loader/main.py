@@ -180,7 +180,7 @@ def extract() -> pd.DataFrame:
 
 def prepare_cards(_cards: pd.DataFrame) -> pd.DataFrame:
     column_check = ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
-                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris", "loyalty", "type_line"]
+                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris", "loyalty", "type_line", "all_parts"]
     ret_cards = _cards.reindex(_cards.columns.union(column_check, sort=False), axis=1, fill_value=pd.NA)
     return ret_cards.loc[:, column_check]
 
