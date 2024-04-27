@@ -92,7 +92,7 @@ def create_connection(connection_string: str, database_name: str) -> sa.Engine:
     return engine
 #endregion
 
-#region Large Transforms
+#region Individual Transforms
 # Some cards with two faces only have one image, and those images will be in the usual
 def get_card_faces(cards: pd.DataFrame):
     log.info("preparing card faces")
@@ -210,6 +210,25 @@ def get_type_line_data(cards: pd.DataFrame):
 
     log.info("finished preparing type line data")
     return card_types_lookup, card_to_type_premap
+
+def get_rarities(cards: pd.DataFrame):
+    return cards["rarity"].drop_duplicates()
+
+def get_layouts(cards: pd.DataFrame):
+    return cards["layout"].drop_duplicates()
+
+def get_cards(_cards: pd.DataFrame):
+    if "card_faces" not in _cards:
+        _cards["card_faces"] = pd.NA
+    cards = _cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
+                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris"]]
+
+    cards_no_multi: pd.DataFrame = cards.loc[cards["card_faces"].isna(), ["id", "image_uris"]]
+    if cards_no_multi.empty == False:
+        images = pd.json_normalize(cards_no_multi["image_uris"]).set_index(cards_no_multi.index)
+        cards = pd.merge(cards, images["normal"], left_index=True, right_index=True, how="left")
+    cards = cards.drop(["image_uris", "card_faces"], axis=1)
+    return cards
 #endregion
 
 def extract() -> pd.DataFrame:
@@ -307,23 +326,12 @@ def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
     sets: pd.DataFrame = sets_frame.copy()
     # sets: pd.DataFrame = None
 
-    rarities = cards_raw["rarity"].drop_duplicates()
-    layouts = cards_raw["layout"].drop_duplicates()
+    rarities = get_rarities(cards_raw)
+    layouts = get_layouts(cards_raw)
     types, type_lines = get_type_line_data(cards_raw)
     faces = get_card_faces(cards_raw)
     parts = get_card_parts(cards_raw)
-
-
-    if "card_faces" not in cards_raw:
-        cards_raw["card_faces"] = pd.NA
-    cards = cards_raw.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
-                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris"]]
-
-    cards_no_multi: pd.DataFrame = cards.loc[cards["card_faces"].isna(), ["id", "image_uris"]]
-    if cards_no_multi.empty == False:
-        images = pd.json_normalize(cards_no_multi["image_uris"]).set_index(cards_no_multi.index)
-        cards = pd.merge(cards, images["normal"], left_index=True, right_index=True, how="left")
-    cards = cards.drop(["image_uris", "card_faces"], axis=1)
+    cards = get_cards(cards_raw)
 
     return cards, faces, parts, type_lines, types, rarities, layouts, sets_frame
 
@@ -631,8 +639,8 @@ if __name__ == "__main__":
 
     log.info("loader started")
 
-    cards_raw, sets_raw = extract()
+    raw_cards, raw_sets = extract()
     
-    cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(cards_raw, sets_raw)
+    cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(raw_cards, raw_sets)
 
     save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
