@@ -44,20 +44,8 @@ def get_card_faces(cards: pd.DataFrame):
         log.warning("no card faces found")
         return card_faces_single
 
-
-    # Convert types to avoid future warning on concat
-    log.debug("casting columns")
-
-    card_faces_multi["power"] = np.where(pd.isnull(card_faces_multi["power"]),card_faces_multi["power"],card_faces_multi["power"].astype("str"))
-    card_faces_multi["toughness"] = np.where(pd.isnull(card_faces_multi["toughness"]),card_faces_multi["toughness"],card_faces_multi["toughness"].astype("str"))
-    card_faces_multi["loyalty"] = np.where(pd.isnull(card_faces_multi["loyalty"]),card_faces_multi["loyalty"],card_faces_multi["loyalty"].astype("str"))
-    card_faces_multi["flavor_text"] = np.where(pd.isnull(card_faces_multi["flavor_text"]),card_faces_multi["flavor_text"],card_faces_multi["flavor_text"].astype("str"))
-
-    card_faces_multi.loc[card_faces_multi["oracle_text"] == "", "oracle_text"] = pd.NA
-    card_faces_multi.loc[card_faces_multi["mana_cost"] == "", "mana_cost"] = pd.NA
-
     column_types = {"id":"str", "object":"str", "name":"str", "image_uris.normal":"str", "cmc":"Int64", "oracle_id":"str"}
-    card_faces_multi = card_faces_multi.astype(column_types)
+    # card_faces_multi = card_faces_multi.astype(column_types)
     del column_types["image_uris.normal"]
     column_types["normal"] = "str"
     card_faces_single = card_faces_single.astype(column_types)
@@ -69,6 +57,15 @@ def get_card_faces(cards: pd.DataFrame):
     card_faces["image"] = card_faces["normal"]
     card_faces.loc[card_faces["image"].isna(), "image"] = card_faces["image_uris.normal"] 
     card_faces.drop(["normal","image_uris.normal"], axis=1, inplace=True)
+
+    card_faces["power"] = np.where(pd.isnull(card_faces["power"]),card_faces["power"],card_faces["power"].astype("str"))
+    card_faces["toughness"] = np.where(pd.isnull(card_faces["toughness"]),card_faces["toughness"],card_faces["toughness"].astype("str"))
+    card_faces["loyalty"] = np.where(pd.isnull(card_faces["loyalty"]),card_faces["loyalty"],card_faces["loyalty"].astype("str"))
+    card_faces["flavor_text"] = np.where(pd.isnull(card_faces["flavor_text"]),card_faces["flavor_text"],card_faces["flavor_text"].astype("str"))
+
+    card_faces.loc[card_faces["oracle_text"] == "", "oracle_text"] = pd.NA
+    card_faces.loc[card_faces["mana_cost"] == "", "mana_cost"] = pd.NA
+
     log.info("finished preparing card faces")
     return card_faces
 
@@ -130,7 +127,7 @@ def get_cards(_cards: pd.DataFrame):
     if "card_faces" not in _cards:
         _cards["card_faces"] = pd.NA
     cards = _cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
-                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris"]]
+                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris", "loyalty"]]
 
     cards_no_multi: pd.DataFrame = cards.loc[cards["card_faces"].isna(), ["id", "image_uris"]]
     if cards_no_multi.empty == False:
