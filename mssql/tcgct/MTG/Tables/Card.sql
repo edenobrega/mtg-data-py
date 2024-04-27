@@ -8,6 +8,7 @@ CREATE TABLE [MTG].[Card] (
     [collector_number] NVARCHAR (25) NOT NULL,
     [power]            NVARCHAR (10) NULL,
     [toughness]        NVARCHAR (10) NULL,
+    [loyalty]          NVARCHAR (10) NULL,
     [card_set_id]      BIGINT        NOT NULL,
     [source_id]        NVARCHAR (36) NOT NULL,
     [converted_cost]   INT           NULL,
