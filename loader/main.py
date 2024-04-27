@@ -178,6 +178,12 @@ def extract() -> pd.DataFrame:
         
     return card_frame, sets_frame
 
+def prepare_cards(_cards: pd.DataFrame) -> pd.DataFrame:
+    column_check = ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
+                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris", "loyalty", "type_line"]
+    ret_cards = _cards.reindex(_cards.columns.union(column_check, sort=False), axis=1, fill_value=pd.NA)
+    return ret_cards.loc[:, column_check]
+
 def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
     cards: pd.DataFrame = None
     faces: pd.DataFrame = None
@@ -329,9 +335,11 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         new_cards["set"] = new_cards["set"].astype("int")
 
         new_cards["collector_number"] = new_cards["collector_number"].astype("str")
+
         # TODO: move this into its own reusable function
         new_cards["power"] = np.where(pd.isnull(new_cards["power"]),new_cards["power"],new_cards["power"].astype("str"))
         new_cards["toughness"] = np.where(pd.isnull(new_cards["toughness"]),new_cards["toughness"],new_cards["toughness"].astype("str"))
+        new_cards["loyalty"] = np.where(pd.isnull(new_cards["loyalty"]),new_cards["loyalty"],new_cards["loyalty"].astype("str"))
 
         new_cards.loc[new_cards["mana_cost"] == "", "mana_cost"] = pd.NA
 
@@ -500,8 +508,10 @@ if __name__ == "__main__":
 
     log.info("loader started")
 
-    raw_cards, raw_sets = extract()
-    
+    extract_cards, raw_sets = extract()
+
+    raw_cards = prepare_cards(extract_cards)
+
     cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(raw_cards, raw_sets)
 
     save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
