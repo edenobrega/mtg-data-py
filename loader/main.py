@@ -369,16 +369,21 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     #endregion
 
     #region Card Face
-    db_card_faces = get_from_db("SELECT [CardID] FROM [MTG].[CardFace]")
+    db_card_faces = get_from_db("""
+                                SELECT DISTINCT c.source_id
+                                FROM [MTG].[CardFace] AS cf
+                                JOIN [MTG].[Card] AS c ON c.id = cf.CardID                                
+                                """)
     # because these are nested in a obj, you would have to reload a card again to check if its face exists, so the chances are we dont need to check for duplicates, but will do so anyway
     #       in case of trying to reload specific cards by deleting them from the db  i guess
-    new_card_faces: pd.DataFrame = faces.copy().loc[~faces["id"].isin(db_card_faces["CardID"])]
+    new_card_faces: pd.DataFrame = faces.copy().loc[~faces["id"].isin(db_card_faces["source_id"])]
     if new_card_faces.shape[0] > 0:
         # map the datbase card id to the object 
         db_card_dict = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
         new_card_faces["id"] = new_card_faces["id"].map(db_card_dict)
         new_card_faces["id"] = new_card_faces["id"].astype("int")
         new_card_faces = new_card_faces.drop(["index"], axis=1)
+
         new_card_faces = new_card_faces.rename(columns={
             "id": "CardID",
             "cmc": "ConvertedCost",
@@ -386,6 +391,8 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
             "oracle_id": "OracleID"
         })
         log.info("adding new card faces . . .")
+
+
         new_card_faces.to_sql(
             schema="MTG",
             name="CardFace",
@@ -401,10 +408,9 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     #region Card Part
     log.info("checking for new card parts")
     db_card_parts = get_from_db("""
-                                SELECT cid.source_id AS [card_id], [object], [component], rci.source_id AS [related_card]
+                                SELECT cid.source_id AS [card_id], [object], [component], cpa.RelatedOracleID AS [related_card]
                                 FROM [MTG].[CardPart] AS cpa
                                 JOIN [MTG].[Card] AS cid ON cpa.CardID = cid.id
-                                JOIN [MTG].[Card] AS rci ON rci.id = cpa.RelatedCardID
                                 """)
     new_card_parts = pd.concat([parts.copy(), db_card_parts]).drop_duplicates(keep=False)
 
@@ -412,12 +418,10 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
 
     new_card_parts["card_id"] = new_card_parts["card_id"].map(db_card_dict)
-    new_card_parts["related_card"] = new_card_parts["related_card"].map(db_card_dict)
 
-    # bc_to_sql requires exact match of column names
     new_card_parts = new_card_parts.rename(columns={
         "card_id": "CardID",
-        "related_card": "RelatedCardID",
+        "related_card": "RelatedOracleID",
         "component": "Component",
         "object": "Object"
     })
@@ -442,6 +446,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
 
     db_card_types: pd.DataFrame = get_from_db("SELECT [id], [name] FROM [MTG].[CardType]").set_index("name").to_dict()["id"]
+    db_type_lines: pd.DataFrame = get_from_db("SELECT [card_id], [type_id], [order] FROM [MTG].[TypeLine]")
     if type_lines.shape[0] > 0:
         card_to_type: pd.DataFrame = type_lines.copy()
         card_to_type["order"] = card_to_type.groupby("id").cumcount().add(1)
@@ -452,9 +457,10 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
             "id":"card_id",
             "type_name":"type_id"
         })
+        new_type_lines: pd.DataFrame = pd.concat([db_type_lines, card_to_type]).drop_duplicates(keep=False)
 
         log.info("adding new card type lines . . .")
-        card_to_type.to_sql(
+        new_type_lines.to_sql(
             schema="MTG",
             name="TypeLine",
             con=engine,

@@ -3,7 +3,7 @@ CREATE TABLE [MTG].[CardPart] (
     [CardID]        BIGINT        NULL,
     [Object]        VARCHAR (25)  NULL,
     [Component]     VARCHAR (100) NULL,
-    [RelatedCardID] BIGINT        NULL
+    [RelatedOracleID] NVARCHAR(36)  NULL
 );
 GO
 
