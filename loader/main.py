@@ -179,6 +179,11 @@ def extract() -> pd.DataFrame:
     return card_frame, sets_frame
 
 def prepare_cards(_cards: pd.DataFrame) -> pd.DataFrame:
+    """Add all potentially missing columns to provided cards dataframe
+    
+    Parameters:
+    _cards (pd.DataFrame): Cards frame
+    """
     column_check = ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
                               "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris", "loyalty", "type_line", "all_parts"]
     ret_cards = _cards.reindex(_cards.columns.union(column_check, sort=False), axis=1, fill_value=pd.NA)
@@ -514,10 +519,10 @@ if __name__ == "__main__":
 
     log.info("loader started")
 
-    extract_cards, raw_sets = extract()
-
-    raw_cards = prepare_cards(extract_cards)
-
-    cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(raw_cards, raw_sets)
-
-    save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
+    try:
+        extract_cards, raw_sets = extract()
+        raw_cards = prepare_cards(extract_cards)
+        cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(raw_cards, raw_sets)
+        save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
+    except Exception as ex:
+        exit_as_failed("unhandled error occurred : " + str(ex))
