@@ -113,7 +113,7 @@ def extract() -> pd.DataFrame:
         bulk_data = requests.get(bulk_uri).json()
 
         if path.exists(BULK_NAME):
-            log.warning("deleteing existing bulk file : "+BULK_NAME)
+            log.warning("deleting existing bulk file : "+BULK_NAME)
             remove(BULK_NAME)
 
         with open(BULK_NAME, 'x', encoding='utf-8') as f:
