@@ -337,7 +337,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         new_cards["toughness"] = np.where(pd.isnull(new_cards["toughness"]),new_cards["toughness"],new_cards["toughness"].astype("str"))
         new_cards["loyalty"] = np.where(pd.isnull(new_cards["loyalty"]),new_cards["loyalty"],new_cards["loyalty"].astype("str"))
 
-        new_cards.loc[new_cards["mana_cost"] == "", "mana_cost"] = pd.NA
+        new_cards.loc[new_cards["mana_cost"] == "", "mana_cost"] = None
 
         new_cards = new_cards.rename(columns={
             "oracle_text":"text",

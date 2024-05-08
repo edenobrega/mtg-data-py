@@ -55,10 +55,8 @@ def get_card_faces(cards: pd.DataFrame) -> pd.DataFrame:
         log.warning("no card faces found")
         return card_faces_single
 
-    column_types = {"id":"str", "object":"str", "name":"str", "image_uris.normal":"str", "cmc":"Int64", "oracle_id":"str"}
-    # card_faces_multi = card_faces_multi.astype(column_types)
-    del column_types["image_uris.normal"]
-    column_types["normal"] = "str"
+    column_types = {"id":"str", "object":"str", "name":"str", "cmc":"Int64", "oracle_id":"str", "loyalty":"float64", "normal":"str"}
+
     card_faces_single = card_faces_single.astype(column_types)
     card_faces = pd.concat([card_faces_multi,card_faces_single])
     
@@ -74,8 +72,8 @@ def get_card_faces(cards: pd.DataFrame) -> pd.DataFrame:
     card_faces["loyalty"] = np.where(pd.isnull(card_faces["loyalty"]),card_faces["loyalty"],card_faces["loyalty"].astype("str"))
     card_faces["flavor_text"] = np.where(pd.isnull(card_faces["flavor_text"]),card_faces["flavor_text"],card_faces["flavor_text"].astype("str"))
 
-    card_faces.loc[card_faces["oracle_text"] == "", "oracle_text"] = pd.NA
-    card_faces.loc[card_faces["mana_cost"] == "", "mana_cost"] = pd.NA
+    card_faces.loc[card_faces["oracle_text"] == "", "oracle_text"] = None
+    card_faces.loc[card_faces["mana_cost"] == "", "mana_cost"] = None
 
     log.info("finished preparing card faces")
     return card_faces
@@ -145,4 +143,5 @@ def get_cards(_cards: pd.DataFrame) -> pd.DataFrame:
         images = pd.json_normalize(cards_no_multi["image_uris"]).set_index(cards_no_multi.index)
         cards = pd.merge(cards, images["normal"], left_index=True, right_index=True, how="left")
     cards = cards.drop(["image_uris", "card_faces"], axis=1)
+
     return cards
