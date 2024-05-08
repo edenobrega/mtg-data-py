@@ -1,0 +1,304 @@
+[
+    {
+		"object": "card",
+		"id": "3e3f0bcd-0796-494d-bf51-94b33c1671e9",
+		"multiverse_ids": [],
+		"tcgplayer_id": 259214,
+		"name": "Propaganda // Propaganda",
+		"lang": "en",
+		"released_at": "2022-04-22",
+		"uri": "https://api.scryfall.com/cards/3e3f0bcd-0796-494d-bf51-94b33c1671e9",
+		"scryfall_uri": "https://scryfall.com/card/sld/381/propaganda-propaganda?utm_source=api",
+		"layout": "reversible_card",
+		"highres_image": true,
+		"image_status": "highres_scan",
+		"color_identity": [
+			"U"
+		],
+		"keywords": [],
+		"card_faces": [
+			{
+				"object": "card_face",
+				"oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+				"layout": "normal",
+				"name": "Propaganda",
+				"mana_cost": "{2}{U}",
+				"cmc": 3.0,
+				"type_line": "Enchantment",
+				"oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+				"colors": [
+					"U"
+				],
+				"flavor_text": "\"Obedience is the true path to happiness.\"\n—Dolorus, magister equitum",
+				"artist": "Scott Balmer",
+				"artist_id": "c26dd9c9-54f9-4a8c-9d54-caac6be0161d",
+				"illustration_id": "7af368fa-6036-462a-a480-02ccc589bea5",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"normal": "https://cards.scryfall.io/normal/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"large": "https://cards.scryfall.io/large/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"png": "https://cards.scryfall.io/png/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.png?1670031727",
+					"art_crop": "https://cards.scryfall.io/art_crop/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"border_crop": "https://cards.scryfall.io/border_crop/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727"
+				}
+			},
+			{
+				"object": "card_face",
+				"oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+				"layout": "normal",
+				"name": "Propaganda",
+				"flavor_name": "",
+				"mana_cost": "{2}{U}",
+				"cmc": 3.0,
+				"type_line": "Enchantment",
+				"oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+				"colors": [
+					"U"
+				],
+				"flavor_text": "\"Why rebel? The system can be changed from within.\"\n—Dolorus, magister equitum",
+				"artist": "Scott Balmer",
+				"artist_id": "c26dd9c9-54f9-4a8c-9d54-caac6be0161d",
+				"illustration_id": "fee742d4-3025-430f-9094-b67f249e54f5",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"normal": "https://cards.scryfall.io/normal/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"large": "https://cards.scryfall.io/large/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"png": "https://cards.scryfall.io/png/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.png?1670031727",
+					"art_crop": "https://cards.scryfall.io/art_crop/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"border_crop": "https://cards.scryfall.io/border_crop/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727"
+				}
+			}
+		],
+		"legalities": {
+			"standard": "not_legal",
+			"future": "not_legal",
+			"historic": "not_legal",
+			"timeless": "not_legal",
+			"gladiator": "not_legal",
+			"pioneer": "not_legal",
+			"explorer": "not_legal",
+			"modern": "not_legal",
+			"legacy": "legal",
+			"pauper": "not_legal",
+			"vintage": "legal",
+			"penny": "not_legal",
+			"commander": "legal",
+			"oathbreaker": "legal",
+			"standardbrawl": "not_legal",
+			"brawl": "not_legal",
+			"alchemy": "not_legal",
+			"paupercommander": "not_legal",
+			"duel": "legal",
+			"oldschool": "not_legal",
+			"premodern": "legal",
+			"predh": "legal"
+		},
+		"games": [
+			"paper"
+		],
+		"reserved": false,
+		"foil": true,
+		"nonfoil": false,
+		"finishes": [
+			"foil"
+		],
+		"oversized": false,
+		"promo": false,
+		"reprint": true,
+		"variation": false,
+		"set_id": "4d92a8a7-ccb0-437d-abdc-9d70fc5ed672",
+		"set": "sld",
+		"set_name": "Secret Lair Drop",
+		"set_type": "box",
+		"set_uri": "https://api.scryfall.com/sets/4d92a8a7-ccb0-437d-abdc-9d70fc5ed672",
+		"set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Asld&unique=prints",
+		"scryfall_set_uri": "https://scryfall.com/sets/sld?utm_source=api",
+		"rulings_uri": "https://api.scryfall.com/cards/3e3f0bcd-0796-494d-bf51-94b33c1671e9/rulings",
+		"prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd&unique=prints",
+		"collector_number": "381",
+		"digital": false,
+		"rarity": "rare",
+		"artist": "Scott Balmer",
+		"artist_ids": [
+			"c26dd9c9-54f9-4a8c-9d54-caac6be0161d"
+		],
+		"border_color": "borderless",
+		"frame": "2015",
+		"frame_effects": [
+			"inverted"
+		],
+		"security_stamp": "oval",
+		"full_art": false,
+		"textless": false,
+		"booster": false,
+		"story_spotlight": false,
+		"edhrec_rank": 179,
+		"prices": {
+			"usd": null,
+			"usd_foil": "30.64",
+			"usd_etched": null,
+			"eur": null,
+			"eur_foil": null,
+			"tix": null
+		},
+		"related_uris": {
+			"tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DPropaganda%2B%252F%252F%2BPropaganda",
+			"tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DPropaganda%2B%252F%252F%2BPropaganda",
+			"edhrec": "https://edhrec.com/route/?cc=Propaganda+%2F%2F+Propaganda"
+		},
+		"purchase_uris": {
+			"tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F259214%3Fpage%3D1",
+			"cardmarket": "https://www.cardmarket.com/en/Magic/Products/Search?referrer=scryfall&searchString=Propaganda+%2F%2F+Propaganda&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+			"cardhoarder": "https://www.cardhoarder.com/cards?affiliate_id=scryfall&data%5Bsearch%5D=Propaganda+%2F%2F+Propaganda&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+		}
+	},
+    {
+		"object": "card",
+		"id": "0b61d772-2d8b-4acf-9dd2-b2e8b03538c8",
+		"oracle_id": "d83bb32d-f409-421a-9d93-bd7ea3240b47",
+		"multiverse_ids": [
+			87599
+		],
+		"mtgo_id": 22176,
+		"mtgo_foil_id": 22177,
+		"tcgplayer_id": 12430,
+		"cardmarket_id": 12658,
+		"name": "Erayo, Soratami Ascendant // Erayo's Essence",
+		"lang": "en",
+		"released_at": "2005-06-03",
+		"uri": "https://api.scryfall.com/cards/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8",
+		"scryfall_uri": "https://scryfall.com/card/sok/35/erayo-soratami-ascendant-erayos-essence?utm_source=api",
+		"layout": "flip",
+		"highres_image": true,
+		"image_status": "highres_scan",
+		"image_uris": {
+			"small": "https://cards.scryfall.io/small/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"normal": "https://cards.scryfall.io/normal/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"large": "https://cards.scryfall.io/large/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"png": "https://cards.scryfall.io/png/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.png?1610664131",
+			"art_crop": "https://cards.scryfall.io/art_crop/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"border_crop": "https://cards.scryfall.io/border_crop/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131"
+		},
+		"mana_cost": "{1}{U}",
+		"cmc": 2.0,
+		"type_line": "Legendary Creature — Moonfolk Monk // Legendary Enchantment",
+		"power": "1",
+		"toughness": "1",
+		"colors": [
+			"U"
+		],
+		"color_identity": [
+			"U"
+		],
+		"keywords": [
+			"Flying"
+		],
+		"card_faces": [
+			{
+				"object": "card_face",
+				"name": "Erayo, Soratami Ascendant",
+				"mana_cost": "{1}{U}",
+				"type_line": "Legendary Creature — Moonfolk Monk",
+				"oracle_text": "Flying\nWhenever the fourth spell of a turn is cast, flip Erayo, Soratami Ascendant.",
+				"power": "1",
+				"toughness": "1",
+				"artist": "Matt Cavotta",
+				"artist_id": "2e6a0611-9411-4ba4-98e3-c0e18cbf9f83",
+				"illustration_id": "99cab97a-9861-4a5a-8578-6c742d192183"
+			},
+			{
+				"object": "card_face",
+				"name": "Erayo's Essence",
+				"flavor_name": "",
+				"mana_cost": "",
+				"type_line": "Legendary Enchantment",
+				"oracle_text": "Whenever an opponent casts their first spell each turn, counter that spell.",
+				"artist": "Matt Cavotta",
+				"artist_id": "2e6a0611-9411-4ba4-98e3-c0e18cbf9f83"
+			}
+		],
+		"legalities": {
+			"standard": "not_legal",
+			"future": "not_legal",
+			"historic": "not_legal",
+			"timeless": "not_legal",
+			"gladiator": "not_legal",
+			"pioneer": "not_legal",
+			"explorer": "not_legal",
+			"modern": "legal",
+			"legacy": "legal",
+			"pauper": "not_legal",
+			"vintage": "legal",
+			"penny": "legal",
+			"commander": "banned",
+			"oathbreaker": "legal",
+			"standardbrawl": "not_legal",
+			"brawl": "not_legal",
+			"alchemy": "not_legal",
+			"paupercommander": "not_legal",
+			"duel": "legal",
+			"oldschool": "not_legal",
+			"premodern": "not_legal",
+			"predh": "banned"
+		},
+		"games": [
+			"paper",
+			"mtgo"
+		],
+		"reserved": false,
+		"foil": true,
+		"nonfoil": true,
+		"finishes": [
+			"nonfoil",
+			"foil"
+		],
+		"oversized": false,
+		"promo": false,
+		"reprint": false,
+		"variation": false,
+		"set_id": "4db16ad3-2b95-442f-bb6b-e9aa7fe7f769",
+		"set": "sok",
+		"set_name": "Saviors of Kamigawa",
+		"set_type": "expansion",
+		"set_uri": "https://api.scryfall.com/sets/4db16ad3-2b95-442f-bb6b-e9aa7fe7f769",
+		"set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Asok&unique=prints",
+		"scryfall_set_uri": "https://scryfall.com/sets/sok?utm_source=api",
+		"rulings_uri": "https://api.scryfall.com/cards/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8/rulings",
+		"prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Ad83bb32d-f409-421a-9d93-bd7ea3240b47&unique=prints",
+		"collector_number": "35",
+		"digital": false,
+		"rarity": "rare",
+		"card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+		"artist": "Matt Cavotta",
+		"artist_ids": [
+			"2e6a0611-9411-4ba4-98e3-c0e18cbf9f83"
+		],
+		"illustration_id": "99cab97a-9861-4a5a-8578-6c742d192183",
+		"border_color": "black",
+		"frame": "2003",
+		"full_art": false,
+		"textless": false,
+		"booster": true,
+		"story_spotlight": false,
+		"penny_rank": 2976,
+		"prices": {
+			"usd": "4.60",
+			"usd_foil": "13.22",
+			"usd_etched": null,
+			"eur": "2.78",
+			"eur_foil": "23.83",
+			"tix": "0.02"
+		},
+		"related_uris": {
+			"gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=87599&printed=false",
+			"tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DErayo%252C%2BSoratami%2BAscendant%2B%252F%252F%2BErayo%2527s%2BEssence",
+			"tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DErayo%252C%2BSoratami%2BAscendant%2B%252F%252F%2BErayo%2527s%2BEssence",
+			"edhrec": "https://edhrec.com/route/?cc=Erayo%2C+Soratami+Ascendant"
+		},
+		"purchase_uris": {
+			"tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F12430%3Fpage%3D1",
+			"cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Saviors-of-Kamigawa/Erayo-Soratami-Ascendant?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+			"cardhoarder": "https://www.cardhoarder.com/cards/22176?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+		}
+	}
+]
