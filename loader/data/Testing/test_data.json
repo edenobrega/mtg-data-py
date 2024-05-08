@@ -1,0 +1,1247 @@
+[
+    {
+		"object": "card",
+		"id": "0b61d772-2d8b-4acf-9dd2-b2e8b03538c8",
+		"oracle_id": "d83bb32d-f409-421a-9d93-bd7ea3240b47",
+		"multiverse_ids": [
+			87599
+		],
+		"mtgo_id": 22176,
+		"mtgo_foil_id": 22177,
+		"tcgplayer_id": 12430,
+		"cardmarket_id": 12658,
+		"name": "Erayo, Soratami Ascendant // Erayo's Essence",
+		"lang": "en",
+		"released_at": "2005-06-03",
+		"uri": "https://api.scryfall.com/cards/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8",
+		"scryfall_uri": "https://scryfall.com/card/sok/35/erayo-soratami-ascendant-erayos-essence?utm_source=api",
+		"layout": "flip",
+		"highres_image": true,
+		"image_status": "highres_scan",
+		"image_uris": {
+			"small": "https://cards.scryfall.io/small/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"normal": "https://cards.scryfall.io/normal/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"large": "https://cards.scryfall.io/large/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"png": "https://cards.scryfall.io/png/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.png?1610664131",
+			"art_crop": "https://cards.scryfall.io/art_crop/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131",
+			"border_crop": "https://cards.scryfall.io/border_crop/front/0/b/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8.jpg?1610664131"
+		},
+		"mana_cost": "{1}{U}",
+		"cmc": 2.0,
+		"type_line": "Legendary Creature — Moonfolk Monk // Legendary Enchantment",
+		"power": "1",
+		"toughness": "1",
+		"colors": [
+			"U"
+		],
+		"color_identity": [
+			"U"
+		],
+		"keywords": [
+			"Flying"
+		],
+		"card_faces": [
+			{
+				"object": "card_face",
+				"name": "Erayo, Soratami Ascendant",
+				"mana_cost": "{1}{U}",
+				"type_line": "Legendary Creature — Moonfolk Monk",
+				"oracle_text": "Flying\nWhenever the fourth spell of a turn is cast, flip Erayo, Soratami Ascendant.",
+				"power": "1",
+				"toughness": "1",
+				"artist": "Matt Cavotta",
+				"artist_id": "2e6a0611-9411-4ba4-98e3-c0e18cbf9f83",
+				"illustration_id": "99cab97a-9861-4a5a-8578-6c742d192183"
+			},
+			{
+				"object": "card_face",
+				"name": "Erayo's Essence",
+				"flavor_name": "",
+				"mana_cost": "",
+				"type_line": "Legendary Enchantment",
+				"oracle_text": "Whenever an opponent casts their first spell each turn, counter that spell.",
+				"artist": "Matt Cavotta",
+				"artist_id": "2e6a0611-9411-4ba4-98e3-c0e18cbf9f83"
+			}
+		],
+		"legalities": {
+			"standard": "not_legal",
+			"future": "not_legal",
+			"historic": "not_legal",
+			"timeless": "not_legal",
+			"gladiator": "not_legal",
+			"pioneer": "not_legal",
+			"explorer": "not_legal",
+			"modern": "legal",
+			"legacy": "legal",
+			"pauper": "not_legal",
+			"vintage": "legal",
+			"penny": "legal",
+			"commander": "banned",
+			"oathbreaker": "legal",
+			"standardbrawl": "not_legal",
+			"brawl": "not_legal",
+			"alchemy": "not_legal",
+			"paupercommander": "not_legal",
+			"duel": "legal",
+			"oldschool": "not_legal",
+			"premodern": "not_legal",
+			"predh": "banned"
+		},
+		"games": [
+			"paper",
+			"mtgo"
+		],
+		"reserved": false,
+		"foil": true,
+		"nonfoil": true,
+		"finishes": [
+			"nonfoil",
+			"foil"
+		],
+		"oversized": false,
+		"promo": false,
+		"reprint": false,
+		"variation": false,
+		"set_id": "4db16ad3-2b95-442f-bb6b-e9aa7fe7f769",
+		"set": "sok",
+		"set_name": "Saviors of Kamigawa",
+		"set_type": "expansion",
+		"set_uri": "https://api.scryfall.com/sets/4db16ad3-2b95-442f-bb6b-e9aa7fe7f769",
+		"set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Asok&unique=prints",
+		"scryfall_set_uri": "https://scryfall.com/sets/sok?utm_source=api",
+		"rulings_uri": "https://api.scryfall.com/cards/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8/rulings",
+		"prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Ad83bb32d-f409-421a-9d93-bd7ea3240b47&unique=prints",
+		"collector_number": "35",
+		"digital": false,
+		"rarity": "rare",
+		"card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+		"artist": "Matt Cavotta",
+		"artist_ids": [
+			"2e6a0611-9411-4ba4-98e3-c0e18cbf9f83"
+		],
+		"illustration_id": "99cab97a-9861-4a5a-8578-6c742d192183",
+		"border_color": "black",
+		"frame": "2003",
+		"full_art": false,
+		"textless": false,
+		"booster": true,
+		"story_spotlight": false,
+		"penny_rank": 2976,
+		"prices": {
+			"usd": "4.60",
+			"usd_foil": "13.22",
+			"usd_etched": null,
+			"eur": "2.78",
+			"eur_foil": "23.83",
+			"tix": "0.02"
+		},
+		"related_uris": {
+			"gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=87599&printed=false",
+			"tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DErayo%252C%2BSoratami%2BAscendant%2B%252F%252F%2BErayo%2527s%2BEssence",
+			"tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DErayo%252C%2BSoratami%2BAscendant%2B%252F%252F%2BErayo%2527s%2BEssence",
+			"edhrec": "https://edhrec.com/route/?cc=Erayo%2C+Soratami+Ascendant"
+		},
+		"purchase_uris": {
+			"tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F12430%3Fpage%3D1",
+			"cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Saviors-of-Kamigawa/Erayo-Soratami-Ascendant?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+			"cardhoarder": "https://www.cardhoarder.com/cards/22176?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+		}
+	},
+	{
+		"object": "card",
+		"id": "b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02",
+		"oracle_id": "6bb7d0df-7a9f-4e17-8c31-7628c4b12356",
+		"multiverse_ids": [
+			410007,
+			410008
+		],
+		"mtgo_id": 59762,
+		"mtgo_foil_id": 59763,
+		"tcgplayer_id": 115432,
+		"cardmarket_id": 288952,
+		"name": "Arlinn Kord // Arlinn, Embraced by the Moon",
+		"lang": "en",
+		"released_at": "2016-04-08",
+		"uri": "https://api.scryfall.com/cards/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02",
+		"scryfall_uri": "https://scryfall.com/card/soi/243/arlinn-kord-arlinn-embraced-by-the-moon?utm_source=api",
+		"layout": "transform",
+		"highres_image": true,
+		"image_status": "highres_scan",
+		"cmc": 4.0,
+		"type_line": "Legendary Planeswalker — Arlinn // Legendary Planeswalker — Arlinn",
+		"color_identity": [
+			"G",
+			"R"
+		],
+		"keywords": [
+			"Transform"
+		],
+		"card_faces": [
+			{
+				"object": "card_face",
+				"name": "Arlinn Kord",
+				"mana_cost": "{2}{R}{G}",
+				"type_line": "Legendary Planeswalker — Arlinn",
+				"oracle_text": "+1: Until end of turn, up to one target creature gets +2/+2 and gains vigilance and haste.\n0: Create a 2/2 green Wolf creature token. Transform Arlinn Kord.",
+				"colors": [
+					"G",
+					"R"
+				],
+				"loyalty": "3",
+				"artist": "Winona Nelson",
+				"artist_id": "e45fe8d3-75d6-42c9-a2df-e945ad81ea27",
+				"illustration_id": "b943b0d6-5e7b-46da-92df-00fd6cf173e0",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/front/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"normal": "https://cards.scryfall.io/normal/front/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"large": "https://cards.scryfall.io/large/front/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"png": "https://cards.scryfall.io/png/front/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.png?1576385339",
+					"art_crop": "https://cards.scryfall.io/art_crop/front/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"border_crop": "https://cards.scryfall.io/border_crop/front/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339"
+				}
+			},
+			{
+				"object": "card_face",
+				"name": "Arlinn, Embraced by the Moon",
+				"flavor_name": "",
+				"mana_cost": "",
+				"type_line": "Legendary Planeswalker — Arlinn",
+				"oracle_text": "+1: Creatures you control get +1/+1 and gain trample until end of turn.\n−1: Arlinn, Embraced by the Moon deals 3 damage to any target. Transform Arlinn, Embraced by the Moon.\n−6: You get an emblem with \"Creatures you control have haste and '{T}: This creature deals damage equal to its power to any target.'\"",
+				"colors": [
+					"G",
+					"R"
+				],
+				"color_indicator": [
+					"G",
+					"R"
+				],
+				"artist": "Winona Nelson",
+				"artist_id": "e45fe8d3-75d6-42c9-a2df-e945ad81ea27",
+				"illustration_id": "025bdbd1-cb24-46b5-b19c-8bee24c3f3c0",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/back/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"normal": "https://cards.scryfall.io/normal/back/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"large": "https://cards.scryfall.io/large/back/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"png": "https://cards.scryfall.io/png/back/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.png?1576385339",
+					"art_crop": "https://cards.scryfall.io/art_crop/back/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339",
+					"border_crop": "https://cards.scryfall.io/border_crop/back/b/3/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02.jpg?1576385339"
+				}
+			}
+		],
+		"all_parts": [
+			{
+				"object": "related_card",
+				"id": "b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02",
+				"component": "combo_piece",
+				"name": "Arlinn Kord // Arlinn, Embraced by the Moon",
+				"type_line": "Legendary Planeswalker — Arlinn // Legendary Planeswalker — Arlinn",
+				"uri": "https://api.scryfall.com/cards/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02"
+			},
+			{
+				"object": "related_card",
+				"id": "bb0686c3-a44a-449d-ab12-eeb9c0c25489",
+				"component": "combo_piece",
+				"name": "Arlinn Kord Emblem",
+				"type_line": "Emblem — Arlinn",
+				"uri": "https://api.scryfall.com/cards/bb0686c3-a44a-449d-ab12-eeb9c0c25489"
+			},
+			{
+				"object": "related_card",
+				"id": "0a5ac360-dc47-4bc5-a4cc-ff223abc3ffc",
+				"component": "token",
+				"name": "Wolf",
+				"type_line": "Token Creature — Wolf",
+				"uri": "https://api.scryfall.com/cards/0a5ac360-dc47-4bc5-a4cc-ff223abc3ffc"
+			},
+			{
+				"object": "related_card",
+				"id": "4825c59d-9e27-4a12-ba84-642b8540e573",
+				"component": "combo_piece",
+				"name": "Shadows Over Innistrad Checklist 2",
+				"type_line": "Card",
+				"uri": "https://api.scryfall.com/cards/4825c59d-9e27-4a12-ba84-642b8540e573"
+			}
+		],
+		"legalities": {
+			"standard": "not_legal",
+			"future": "not_legal",
+			"historic": "legal",
+			"timeless": "legal",
+			"gladiator": "legal",
+			"pioneer": "legal",
+			"explorer": "legal",
+			"modern": "legal",
+			"legacy": "legal",
+			"pauper": "not_legal",
+			"vintage": "legal",
+			"penny": "legal",
+			"commander": "legal",
+			"oathbreaker": "legal",
+			"standardbrawl": "not_legal",
+			"brawl": "legal",
+			"alchemy": "not_legal",
+			"paupercommander": "not_legal",
+			"duel": "legal",
+			"oldschool": "not_legal",
+			"premodern": "not_legal",
+			"predh": "not_legal"
+		},
+		"games": [
+			"paper",
+			"mtgo"
+		],
+		"reserved": false,
+		"foil": true,
+		"nonfoil": true,
+		"finishes": [
+			"nonfoil",
+			"foil"
+		],
+		"oversized": false,
+		"promo": false,
+		"reprint": false,
+		"variation": false,
+		"set_id": "5e914d7e-c1e9-446c-a33d-d093c02b2743",
+		"set": "soi",
+		"set_name": "Shadows over Innistrad",
+		"set_type": "expansion",
+		"set_uri": "https://api.scryfall.com/sets/5e914d7e-c1e9-446c-a33d-d093c02b2743",
+		"set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Asoi&unique=prints",
+		"scryfall_set_uri": "https://scryfall.com/sets/soi?utm_source=api",
+		"rulings_uri": "https://api.scryfall.com/cards/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02/rulings",
+		"prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A6bb7d0df-7a9f-4e17-8c31-7628c4b12356&unique=prints",
+		"collector_number": "243",
+		"digital": false,
+		"rarity": "mythic",
+		"artist": "Winona Nelson",
+		"artist_ids": [
+			"e45fe8d3-75d6-42c9-a2df-e945ad81ea27"
+		],
+		"border_color": "black",
+		"frame": "2015",
+		"frame_effects": [
+			"sunmoondfc"
+		],
+		"security_stamp": "oval",
+		"full_art": false,
+		"textless": false,
+		"booster": true,
+		"story_spotlight": false,
+		"edhrec_rank": 6126,
+		"penny_rank": 2372,
+		"prices": {
+			"usd": "1.94",
+			"usd_foil": "5.98",
+			"usd_etched": null,
+			"eur": "2.68",
+			"eur_foil": "4.96",
+			"tix": "0.02"
+		},
+		"related_uris": {
+			"gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=410007&printed=false",
+			"tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DArlinn%2BKord%2B%252F%252F%2BArlinn%252C%2BEmbraced%2Bby%2Bthe%2BMoon",
+			"tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DArlinn%2BKord%2B%252F%252F%2BArlinn%252C%2BEmbraced%2Bby%2Bthe%2BMoon",
+			"edhrec": "https://edhrec.com/route/?cc=Arlinn+Kord"
+		},
+		"purchase_uris": {
+			"tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F115432%3Fpage%3D1",
+			"cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Shadows-over-Innistrad/Arlinn-Kord-Arlinn-Embraced-by-the-Moon?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+			"cardhoarder": "https://www.cardhoarder.com/cards/59762?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+		}
+	},
+	{
+		"object": "card",
+		"id": "ba09360a-067e-48a5-bdc5-a19fd066a785",
+		"oracle_id": "0b299983-9f0f-404a-acd1-8f142572b1f1",
+		"multiverse_ids": [
+			516912,
+			516913
+		],
+		"mtgo_id": 88779,
+		"arena_id": 76544,
+		"tcgplayer_id": 235673,
+		"cardmarket_id": 557492,
+		"name": "Extus, Oriq Overlord // Awaken the Blood Avatar",
+		"lang": "en",
+		"released_at": "2021-04-23",
+		"uri": "https://api.scryfall.com/cards/ba09360a-067e-48a5-bdc5-a19fd066a785",
+		"scryfall_uri": "https://scryfall.com/card/stx/149/extus-oriq-overlord-awaken-the-blood-avatar?utm_source=api",
+		"layout": "modal_dfc",
+		"highres_image": true,
+		"image_status": "highres_scan",
+		"cmc": 4.0,
+		"type_line": "Legendary Creature — Human Warlock // Sorcery",
+		"color_identity": [
+			"B",
+			"R",
+			"W"
+		],
+		"keywords": [
+			"Magecraft",
+			"Double strike"
+		],
+		"card_faces": [
+			{
+				"object": "card_face",
+				"name": "Extus, Oriq Overlord",
+				"mana_cost": "{1}{W}{B}{B}",
+				"type_line": "Legendary Creature — Human Warlock",
+				"oracle_text": "Double strike\nMagecraft — Whenever you cast or copy an instant or sorcery spell, return target nonlegendary creature card from your graveyard to your hand.",
+				"colors": [
+					"B",
+					"W"
+				],
+				"power": "2",
+				"toughness": "4",
+				"flavor_text": "\"Join me for the dawn of a new age.\"",
+				"artist": "Chase Stone",
+				"artist_id": "2d753f61-5f5b-468e-97ea-8e0fdd347340",
+				"illustration_id": "d4a80d40-02ec-4d4e-bbe5-2fb58bbb4a88",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/front/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"normal": "https://cards.scryfall.io/normal/front/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"large": "https://cards.scryfall.io/large/front/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"png": "https://cards.scryfall.io/png/front/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.png?1624593379",
+					"art_crop": "https://cards.scryfall.io/art_crop/front/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"border_crop": "https://cards.scryfall.io/border_crop/front/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379"
+				}
+			},
+			{
+				"object": "card_face",
+				"name": "Awaken the Blood Avatar",
+				"flavor_name": "",
+				"mana_cost": "{6}{B}{R}",
+				"type_line": "Sorcery",
+				"oracle_text": "As an additional cost to cast this spell, you may sacrifice any number of creatures. This spell costs {2} less to cast for each creature sacrificed this way.\nEach opponent sacrifices a creature. Create a 3/6 black and red Avatar creature token with haste and \"Whenever this creature attacks, it deals 3 damage to each opponent.\"",
+				"colors": [
+					"B",
+					"R"
+				],
+				"artist": "Kekai Kotaki",
+				"artist_id": "4b771085-c049-4308-930d-ec9665f803a4",
+				"illustration_id": "ed8629b5-b79b-4b2a-a3dd-e230f0b8b3ea",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/back/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"normal": "https://cards.scryfall.io/normal/back/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"large": "https://cards.scryfall.io/large/back/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"png": "https://cards.scryfall.io/png/back/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.png?1624593379",
+					"art_crop": "https://cards.scryfall.io/art_crop/back/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379",
+					"border_crop": "https://cards.scryfall.io/border_crop/back/b/a/ba09360a-067e-48a5-bdc5-a19fd066a785.jpg?1624593379"
+				}
+			}
+		],
+		"all_parts": [
+			{
+				"object": "related_card",
+				"id": "786156ce-544c-4aa4-8381-756042d0bcda",
+				"component": "combo_piece",
+				"name": "Extus, Oriq Overlord // Awaken the Blood Avatar",
+				"type_line": "Legendary Creature — Human Warlock // Sorcery",
+				"uri": "https://api.scryfall.com/cards/786156ce-544c-4aa4-8381-756042d0bcda"
+			},
+			{
+				"object": "related_card",
+				"id": "94a50acd-ac2d-47bf-b331-0bcf5edd9c75",
+				"component": "token",
+				"name": "Avatar",
+				"type_line": "Token Creature — Avatar",
+				"uri": "https://api.scryfall.com/cards/94a50acd-ac2d-47bf-b331-0bcf5edd9c75"
+			}
+		],
+		"legalities": {
+			"standard": "not_legal",
+			"future": "not_legal",
+			"historic": "legal",
+			"timeless": "legal",
+			"gladiator": "legal",
+			"pioneer": "legal",
+			"explorer": "legal",
+			"modern": "legal",
+			"legacy": "legal",
+			"pauper": "not_legal",
+			"vintage": "legal",
+			"penny": "not_legal",
+			"commander": "legal",
+			"oathbreaker": "legal",
+			"standardbrawl": "not_legal",
+			"brawl": "legal",
+			"alchemy": "not_legal",
+			"paupercommander": "not_legal",
+			"duel": "legal",
+			"oldschool": "not_legal",
+			"premodern": "not_legal",
+			"predh": "not_legal"
+		},
+		"games": [
+			"arena",
+			"paper",
+			"mtgo"
+		],
+		"reserved": false,
+		"foil": true,
+		"nonfoil": true,
+		"finishes": [
+			"nonfoil",
+			"foil"
+		],
+		"oversized": false,
+		"promo": false,
+		"reprint": false,
+		"variation": false,
+		"set_id": "541c3c28-8747-40e5-a231-8e8f33234859",
+		"set": "stx",
+		"set_name": "Strixhaven: School of Mages",
+		"set_type": "expansion",
+		"set_uri": "https://api.scryfall.com/sets/541c3c28-8747-40e5-a231-8e8f33234859",
+		"set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Astx&unique=prints",
+		"scryfall_set_uri": "https://scryfall.com/sets/stx?utm_source=api",
+		"rulings_uri": "https://api.scryfall.com/cards/ba09360a-067e-48a5-bdc5-a19fd066a785/rulings",
+		"prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A0b299983-9f0f-404a-acd1-8f142572b1f1&unique=prints",
+		"collector_number": "149",
+		"digital": false,
+		"rarity": "mythic",
+		"artist": "Chase Stone & Kekai Kotaki",
+		"artist_ids": [
+			"2d753f61-5f5b-468e-97ea-8e0fdd347340",
+			"4b771085-c049-4308-930d-ec9665f803a4"
+		],
+		"border_color": "black",
+		"frame": "2015",
+		"frame_effects": [
+			"legendary"
+		],
+		"security_stamp": "oval",
+		"full_art": false,
+		"textless": false,
+		"booster": true,
+		"story_spotlight": true,
+		"edhrec_rank": 7858,
+		"preview": {
+			"source": "PowrDragn",
+			"source_uri": "https://twitter.com/powrdragn/status/1376927296758509568",
+			"previewed_at": "2021-03-30"
+		},
+		"prices": {
+			"usd": "0.37",
+			"usd_foil": "0.72",
+			"usd_etched": null,
+			"eur": "0.63",
+			"eur_foil": "1.30",
+			"tix": "0.03"
+		},
+		"related_uris": {
+			"gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=516912&printed=false",
+			"tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DExtus%252C%2BOriq%2BOverlord%2B%252F%252F%2BAwaken%2Bthe%2BBlood%2BAvatar",
+			"tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DExtus%252C%2BOriq%2BOverlord%2B%252F%252F%2BAwaken%2Bthe%2BBlood%2BAvatar",
+			"edhrec": "https://edhrec.com/route/?cc=Extus%2C+Oriq+Overlord"
+		},
+		"purchase_uris": {
+			"tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F235673%3Fpage%3D1",
+			"cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Strixhaven-School-of-Mages/Extus-Oriq-Overlord-Awaken-the-Blood-Avatar?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+			"cardhoarder": "https://www.cardhoarder.com/cards/88779?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+		}
+	},
+	{
+		"object": "card",
+		"id": "3e3f0bcd-0796-494d-bf51-94b33c1671e9",
+		"multiverse_ids": [],
+		"tcgplayer_id": 259214,
+		"name": "Propaganda // Propaganda",
+		"lang": "en",
+		"released_at": "2022-04-22",
+		"uri": "https://api.scryfall.com/cards/3e3f0bcd-0796-494d-bf51-94b33c1671e9",
+		"scryfall_uri": "https://scryfall.com/card/sld/381/propaganda-propaganda?utm_source=api",
+		"layout": "reversible_card",
+		"highres_image": true,
+		"image_status": "highres_scan",
+		"color_identity": [
+			"U"
+		],
+		"keywords": [],
+		"card_faces": [
+			{
+				"object": "card_face",
+				"oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+				"layout": "normal",
+				"name": "Propaganda",
+				"mana_cost": "{2}{U}",
+				"cmc": 3.0,
+				"type_line": "Enchantment",
+				"oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+				"colors": [
+					"U"
+				],
+				"flavor_text": "\"Obedience is the true path to happiness.\"\n—Dolorus, magister equitum",
+				"artist": "Scott Balmer",
+				"artist_id": "c26dd9c9-54f9-4a8c-9d54-caac6be0161d",
+				"illustration_id": "7af368fa-6036-462a-a480-02ccc589bea5",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"normal": "https://cards.scryfall.io/normal/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"large": "https://cards.scryfall.io/large/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"png": "https://cards.scryfall.io/png/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.png?1670031727",
+					"art_crop": "https://cards.scryfall.io/art_crop/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"border_crop": "https://cards.scryfall.io/border_crop/front/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727"
+				}
+			},
+			{
+				"object": "card_face",
+				"oracle_id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
+				"layout": "normal",
+				"name": "Propaganda",
+				"flavor_name": "",
+				"mana_cost": "{2}{U}",
+				"cmc": 3.0,
+				"type_line": "Enchantment",
+				"oracle_text": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+				"colors": [
+					"U"
+				],
+				"flavor_text": "\"Why rebel? The system can be changed from within.\"\n—Dolorus, magister equitum",
+				"artist": "Scott Balmer",
+				"artist_id": "c26dd9c9-54f9-4a8c-9d54-caac6be0161d",
+				"illustration_id": "fee742d4-3025-430f-9094-b67f249e54f5",
+				"image_uris": {
+					"small": "https://cards.scryfall.io/small/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"normal": "https://cards.scryfall.io/normal/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"large": "https://cards.scryfall.io/large/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"png": "https://cards.scryfall.io/png/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.png?1670031727",
+					"art_crop": "https://cards.scryfall.io/art_crop/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727",
+					"border_crop": "https://cards.scryfall.io/border_crop/back/3/e/3e3f0bcd-0796-494d-bf51-94b33c1671e9.jpg?1670031727"
+				}
+			}
+		],
+		"legalities": {
+			"standard": "not_legal",
+			"future": "not_legal",
+			"historic": "not_legal",
+			"timeless": "not_legal",
+			"gladiator": "not_legal",
+			"pioneer": "not_legal",
+			"explorer": "not_legal",
+			"modern": "not_legal",
+			"legacy": "legal",
+			"pauper": "not_legal",
+			"vintage": "legal",
+			"penny": "not_legal",
+			"commander": "legal",
+			"oathbreaker": "legal",
+			"standardbrawl": "not_legal",
+			"brawl": "not_legal",
+			"alchemy": "not_legal",
+			"paupercommander": "not_legal",
+			"duel": "legal",
+			"oldschool": "not_legal",
+			"premodern": "legal",
+			"predh": "legal"
+		},
+		"games": [
+			"paper"
+		],
+		"reserved": false,
+		"foil": true,
+		"nonfoil": false,
+		"finishes": [
+			"foil"
+		],
+		"oversized": false,
+		"promo": false,
+		"reprint": true,
+		"variation": false,
+		"set_id": "4d92a8a7-ccb0-437d-abdc-9d70fc5ed672",
+		"set": "sld",
+		"set_name": "Secret Lair Drop",
+		"set_type": "box",
+		"set_uri": "https://api.scryfall.com/sets/4d92a8a7-ccb0-437d-abdc-9d70fc5ed672",
+		"set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Asld&unique=prints",
+		"scryfall_set_uri": "https://scryfall.com/sets/sld?utm_source=api",
+		"rulings_uri": "https://api.scryfall.com/cards/3e3f0bcd-0796-494d-bf51-94b33c1671e9/rulings",
+		"prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Aea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd&unique=prints",
+		"collector_number": "381",
+		"digital": false,
+		"rarity": "rare",
+		"artist": "Scott Balmer",
+		"artist_ids": [
+			"c26dd9c9-54f9-4a8c-9d54-caac6be0161d"
+		],
+		"border_color": "borderless",
+		"frame": "2015",
+		"frame_effects": [
+			"inverted"
+		],
+		"security_stamp": "oval",
+		"full_art": false,
+		"textless": false,
+		"booster": false,
+		"story_spotlight": false,
+		"edhrec_rank": 179,
+		"prices": {
+			"usd": null,
+			"usd_foil": "30.64",
+			"usd_etched": null,
+			"eur": null,
+			"eur_foil": null,
+			"tix": null
+		},
+		"related_uris": {
+			"tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DPropaganda%2B%252F%252F%2BPropaganda",
+			"tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DPropaganda%2B%252F%252F%2BPropaganda",
+			"edhrec": "https://edhrec.com/route/?cc=Propaganda+%2F%2F+Propaganda"
+		},
+		"purchase_uris": {
+			"tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F259214%3Fpage%3D1",
+			"cardmarket": "https://www.cardmarket.com/en/Magic/Products/Search?referrer=scryfall&searchString=Propaganda+%2F%2F+Propaganda&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+			"cardhoarder": "https://www.cardhoarder.com/cards?affiliate_id=scryfall&data%5Bsearch%5D=Propaganda+%2F%2F+Propaganda&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+		}
+	},
+	{
+        "object": "card",
+        "id": "0000579f-7b35-4ed3-b44c-db2a538066fe",
+        "oracle_id": "44623693-51d6-49ad-8cd7-140505caf02f",
+        "multiverse_ids": [
+            109722
+        ],
+        "mtgo_id": 25527,
+        "mtgo_foil_id": 25528,
+        "tcgplayer_id": 14240,
+        "cardmarket_id": 13850,
+        "name": "Fury Sliver",
+        "lang": "en",
+        "released_at": "2006-10-06",
+        "uri": "https://api.scryfall.com/cards/0000579f-7b35-4ed3-b44c-db2a538066fe",
+        "scryfall_uri": "https://scryfall.com/card/tsp/157/fury-sliver?utm_source=api",
+        "layout": "normal",
+        "highres_image": true,
+        "image_status": "highres_scan",
+        "image_uris": {
+            "small": "https://cards.scryfall.io/small/front/0/0/0000579f-7b35-4ed3-b44c-db2a538066fe.jpg?1562894979",
+            "normal": "https://cards.scryfall.io/normal/front/0/0/0000579f-7b35-4ed3-b44c-db2a538066fe.jpg?1562894979",
+            "large": "https://cards.scryfall.io/large/front/0/0/0000579f-7b35-4ed3-b44c-db2a538066fe.jpg?1562894979",
+            "png": "https://cards.scryfall.io/png/front/0/0/0000579f-7b35-4ed3-b44c-db2a538066fe.png?1562894979",
+            "art_crop": "https://cards.scryfall.io/art_crop/front/0/0/0000579f-7b35-4ed3-b44c-db2a538066fe.jpg?1562894979",
+            "border_crop": "https://cards.scryfall.io/border_crop/front/0/0/0000579f-7b35-4ed3-b44c-db2a538066fe.jpg?1562894979"
+        },
+        "mana_cost": "{5}{R}",
+        "cmc": 6.0,
+        "type_line": "Creature — Sliver",
+        "oracle_text": "All Sliver creatures have double strike.",
+        "power": "3",
+        "toughness": "3",
+        "colors": [
+            "R"
+        ],
+        "color_identity": [
+            "R"
+        ],
+        "keywords": [],
+        "legalities": {
+            "standard": "not_legal",
+            "future": "not_legal",
+            "historic": "not_legal",
+            "timeless": "not_legal",
+            "gladiator": "not_legal",
+            "pioneer": "not_legal",
+            "explorer": "not_legal",
+            "modern": "legal",
+            "legacy": "legal",
+            "pauper": "not_legal",
+            "vintage": "legal",
+            "penny": "not_legal",
+            "commander": "legal",
+            "oathbreaker": "legal",
+            "standardbrawl": "not_legal",
+            "brawl": "not_legal",
+            "alchemy": "not_legal",
+            "paupercommander": "restricted",
+            "duel": "legal",
+            "oldschool": "not_legal",
+            "premodern": "not_legal",
+            "predh": "legal"
+        },
+        "games": [
+            "paper",
+            "mtgo"
+        ],
+        "reserved": false,
+        "foil": true,
+        "nonfoil": true,
+        "finishes": [
+            "nonfoil",
+            "foil"
+        ],
+        "oversized": false,
+        "promo": false,
+        "reprint": false,
+        "variation": false,
+        "set_id": "c1d109bc-ffd8-428f-8d7d-3f8d7e648046",
+        "set": "tsp",
+        "set_name": "Time Spiral",
+        "set_type": "expansion",
+        "set_uri": "https://api.scryfall.com/sets/c1d109bc-ffd8-428f-8d7d-3f8d7e648046",
+        "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Atsp&unique=prints",
+        "scryfall_set_uri": "https://scryfall.com/sets/tsp?utm_source=api",
+        "rulings_uri": "https://api.scryfall.com/cards/0000579f-7b35-4ed3-b44c-db2a538066fe/rulings",
+        "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A44623693-51d6-49ad-8cd7-140505caf02f&unique=prints",
+        "collector_number": "157",
+        "digital": false,
+        "rarity": "uncommon",
+        "flavor_text": "\"A rift opened, and our arrows were abruptly stilled. To move was to push the world. But the sliver's claw still twitched, red wounds appeared in Thed's chest, and ribbons of blood hung in the air.\"\n—Adom Capashen, Benalish hero",
+        "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+        "artist": "Paolo Parente",
+        "artist_ids": [
+            "d48dd097-720d-476a-8722-6a02854ae28b"
+        ],
+        "illustration_id": "2fcca987-364c-4738-a75b-099d8a26d614",
+        "border_color": "black",
+        "frame": "2003",
+        "full_art": false,
+        "textless": false,
+        "booster": true,
+        "story_spotlight": false,
+        "edhrec_rank": 7122,
+        "penny_rank": 12143,
+        "prices": {
+            "usd": "0.41",
+            "usd_foil": "1.49",
+            "usd_etched": null,
+            "eur": "0.24",
+            "eur_foil": "0.71",
+            "tix": "0.03"
+        },
+        "related_uris": {
+            "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=109722&printed=false",
+            "tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DFury%2BSliver",
+            "tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DFury%2BSliver",
+            "edhrec": "https://edhrec.com/route/?cc=Fury+Sliver"
+        },
+        "purchase_uris": {
+            "tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F14240%3Fpage%3D1",
+            "cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Time-Spiral/Fury-Sliver?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+            "cardhoarder": "https://www.cardhoarder.com/cards/25527?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+        }
+    },
+	{
+		"object": "card",
+		"id": "00320106-ce51-46a9-b0f9-79b3baf4e505",
+		"oracle_id": "20e7a93f-77ce-466b-8586-35d390689d0c",
+		"multiverse_ids": [
+			457368
+		],
+		"mtgo_id": 71464,
+		"arena_id": 69358,
+		"tcgplayer_id": 183063,
+		"cardmarket_id": 368154,
+		"name": "Consecrate // Consume",
+		"lang": "en",
+		"released_at": "2019-01-25",
+		"uri": "https://api.scryfall.com/cards/00320106-ce51-46a9-b0f9-79b3baf4e505",
+		"scryfall_uri": "https://scryfall.com/card/rna/224/consecrate-consume?utm_source=api",
+		"layout": "split",
+		"highres_image": true,
+		"image_status": "highres_scan",
+		"image_uris": {
+			"small": "https://cards.scryfall.io/small/front/0/0/00320106-ce51-46a9-b0f9-79b3baf4e505.jpg?1584832033",
+			"normal": "https://cards.scryfall.io/normal/front/0/0/00320106-ce51-46a9-b0f9-79b3baf4e505.jpg?1584832033",
+			"large": "https://cards.scryfall.io/large/front/0/0/00320106-ce51-46a9-b0f9-79b3baf4e505.jpg?1584832033",
+			"png": "https://cards.scryfall.io/png/front/0/0/00320106-ce51-46a9-b0f9-79b3baf4e505.png?1584832033",
+			"art_crop": "https://cards.scryfall.io/art_crop/front/0/0/00320106-ce51-46a9-b0f9-79b3baf4e505.jpg?1584832033",
+			"border_crop": "https://cards.scryfall.io/border_crop/front/0/0/00320106-ce51-46a9-b0f9-79b3baf4e505.jpg?1584832033"
+		},
+		"mana_cost": "{1}{W/B} // {2}{W}{B}",
+		"cmc": 6.0,
+		"type_line": "Instant // Sorcery",
+		"colors": [
+			"B",
+			"W"
+		],
+		"color_identity": [
+			"B",
+			"W"
+		],
+		"keywords": [],
+		"card_faces": [
+			{
+				"object": "card_face",
+				"name": "Consecrate",
+				"mana_cost": "{1}{W/B}",
+				"type_line": "Instant",
+				"oracle_text": "Exile target card from a graveyard.\nDraw a card.",
+				"watermark": "orzhov",
+				"artist": "Igor Kieryluk",
+				"artist_id": "9c3e9d17-509f-485c-9360-46d897ce716b",
+				"illustration_id": "a0cc2a18-34cd-4044-ae73-bef0cf498317"
+			},
+			{
+				"object": "card_face",
+				"name": "Consume",
+				"flavor_name": "",
+				"mana_cost": "{2}{W}{B}",
+				"type_line": "Sorcery",
+				"oracle_text": "Target player sacrifices a creature with the greatest power among creatures they control. You gain life equal to its power.",
+				"artist": "Igor Kieryluk",
+				"artist_id": "9c3e9d17-509f-485c-9360-46d897ce716b"
+			}
+		],
+		"legalities": {
+			"standard": "not_legal",
+			"future": "not_legal",
+			"historic": "legal",
+			"timeless": "legal",
+			"gladiator": "legal",
+			"pioneer": "legal",
+			"explorer": "legal",
+			"modern": "legal",
+			"legacy": "legal",
+			"pauper": "not_legal",
+			"vintage": "legal",
+			"penny": "legal",
+			"commander": "legal",
+			"oathbreaker": "legal",
+			"standardbrawl": "not_legal",
+			"brawl": "legal",
+			"alchemy": "not_legal",
+			"paupercommander": "not_legal",
+			"duel": "legal",
+			"oldschool": "not_legal",
+			"premodern": "not_legal",
+			"predh": "not_legal"
+		},
+		"games": [
+			"arena",
+			"paper",
+			"mtgo"
+		],
+		"reserved": false,
+		"foil": true,
+		"nonfoil": true,
+		"finishes": [
+			"nonfoil",
+			"foil"
+		],
+		"oversized": false,
+		"promo": false,
+		"reprint": false,
+		"variation": false,
+		"set_id": "97a7fd84-8d89-45a3-b48b-c951f6a3f9f1",
+		"set": "rna",
+		"set_name": "Ravnica Allegiance",
+		"set_type": "expansion",
+		"set_uri": "https://api.scryfall.com/sets/97a7fd84-8d89-45a3-b48b-c951f6a3f9f1",
+		"set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Arna&unique=prints",
+		"scryfall_set_uri": "https://scryfall.com/sets/rna?utm_source=api",
+		"rulings_uri": "https://api.scryfall.com/cards/00320106-ce51-46a9-b0f9-79b3baf4e505/rulings",
+		"prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A20e7a93f-77ce-466b-8586-35d390689d0c&unique=prints",
+		"collector_number": "224",
+		"digital": false,
+		"rarity": "uncommon",
+		"card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+		"artist": "Igor Kieryluk",
+		"artist_ids": [
+			"9c3e9d17-509f-485c-9360-46d897ce716b"
+		],
+		"illustration_id": "a0cc2a18-34cd-4044-ae73-bef0cf498317",
+		"border_color": "black",
+		"frame": "2015",
+		"full_art": false,
+		"textless": false,
+		"booster": true,
+		"story_spotlight": false,
+		"edhrec_rank": 14476,
+		"penny_rank": 4786,
+		"preview": {
+			"source": "Crestongames",
+			"source_uri": "https://www.twitch.tv/videos/358331828",
+			"previewed_at": "2019-01-03"
+		},
+		"prices": {
+			"usd": "0.12",
+			"usd_foil": "0.56",
+			"usd_etched": null,
+			"eur": "0.22",
+			"eur_foil": "0.44",
+			"tix": "0.03"
+		},
+		"related_uris": {
+			"gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=457368&printed=false",
+			"tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DConsecrate%2B%252F%252F%2BConsume",
+			"tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DConsecrate%2B%252F%252F%2BConsume",
+			"edhrec": "https://edhrec.com/route/?cc=Consecrate+%2F%2F+Consume"
+		},
+		"purchase_uris": {
+			"tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F183063%3Fpage%3D1",
+			"cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Ravnica-Allegiance/Consecrate-Consume?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+			"cardhoarder": "https://www.cardhoarder.com/cards/71464?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+		}
+	},
+	{
+        "object": "card",
+        "id": "90f17b85-a866-48e8-aae0-55330109550e",
+        "oracle_id": "b0d1c34c-30f1-4c07-9527-38b49231eb9f",
+        "multiverse_ids": [
+            74257
+        ],
+        "tcgplayer_id": 37883,
+        "cardmarket_id": 14779,
+        "name": "Little Girl",
+        "lang": "en",
+        "released_at": "2004-11-19",
+        "uri": "https://api.scryfall.com/cards/90f17b85-a866-48e8-aae0-55330109550e",
+        "scryfall_uri": "https://scryfall.com/card/unh/16/little-girl?utm_source=api",
+        "layout": "normal",
+        "highres_image": true,
+        "image_status": "highres_scan",
+        "image_uris": {
+            "small": "https://cards.scryfall.io/small/front/9/0/90f17b85-a866-48e8-aae0-55330109550e.jpg?1562488879",
+            "normal": "https://cards.scryfall.io/normal/front/9/0/90f17b85-a866-48e8-aae0-55330109550e.jpg?1562488879",
+            "large": "https://cards.scryfall.io/large/front/9/0/90f17b85-a866-48e8-aae0-55330109550e.jpg?1562488879",
+            "png": "https://cards.scryfall.io/png/front/9/0/90f17b85-a866-48e8-aae0-55330109550e.png?1562488879",
+            "art_crop": "https://cards.scryfall.io/art_crop/front/9/0/90f17b85-a866-48e8-aae0-55330109550e.jpg?1562488879",
+            "border_crop": "https://cards.scryfall.io/border_crop/front/9/0/90f17b85-a866-48e8-aae0-55330109550e.jpg?1562488879"
+        },
+        "mana_cost": "{HW}",
+        "cmc": 0.5,
+        "type_line": "Creature — Human Child",
+        "oracle_text": "",
+        "power": ".5",
+        "toughness": ".5",
+        "colors": [
+            "W"
+        ],
+        "color_identity": [
+            "W"
+        ],
+        "keywords": [],
+        "legalities": {
+            "standard": "not_legal",
+            "future": "not_legal",
+            "historic": "not_legal",
+            "timeless": "not_legal",
+            "gladiator": "not_legal",
+            "pioneer": "not_legal",
+            "explorer": "not_legal",
+            "modern": "not_legal",
+            "legacy": "not_legal",
+            "pauper": "not_legal",
+            "vintage": "not_legal",
+            "penny": "not_legal",
+            "commander": "not_legal",
+            "oathbreaker": "not_legal",
+            "standardbrawl": "not_legal",
+            "brawl": "not_legal",
+            "alchemy": "not_legal",
+            "paupercommander": "not_legal",
+            "duel": "not_legal",
+            "oldschool": "not_legal",
+            "premodern": "not_legal",
+            "predh": "not_legal"
+        },
+        "games": [
+            "paper"
+        ],
+        "reserved": false,
+        "foil": true,
+        "nonfoil": true,
+        "finishes": [
+            "nonfoil",
+            "foil"
+        ],
+        "oversized": false,
+        "promo": false,
+        "reprint": false,
+        "variation": false,
+        "set_id": "4c8bc76a-05a5-43db-aaf0-34deb347b871",
+        "set": "unh",
+        "set_name": "Unhinged",
+        "set_type": "funny",
+        "set_uri": "https://api.scryfall.com/sets/4c8bc76a-05a5-43db-aaf0-34deb347b871",
+        "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aunh&unique=prints",
+        "scryfall_set_uri": "https://scryfall.com/sets/unh?utm_source=api",
+        "rulings_uri": "https://api.scryfall.com/cards/90f17b85-a866-48e8-aae0-55330109550e/rulings",
+        "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3Ab0d1c34c-30f1-4c07-9527-38b49231eb9f&unique=prints",
+        "collector_number": "16",
+        "digital": false,
+        "rarity": "common",
+        "flavor_text": "In the future, she may be a distinguished leader, a great scholar, or a decorated hero. These days all she does is pee the bed.",
+        "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+        "artist": "Rebecca Guay",
+        "artist_ids": [
+            "f8f662fa-d597-46a3-afb2-91d6e13243e2"
+        ],
+        "illustration_id": "fa376327-cd38-4f28-a8ab-7f61cf35a455",
+        "border_color": "silver",
+        "frame": "2003",
+        "full_art": false,
+        "textless": false,
+        "booster": true,
+        "story_spotlight": false,
+        "prices": {
+            "usd": "0.30",
+            "usd_foil": "17.70",
+            "usd_etched": null,
+            "eur": "0.32",
+            "eur_foil": "15.98",
+            "tix": null
+        },
+        "related_uris": {
+            "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=74257&printed=false",
+            "tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DLittle%2BGirl",
+            "tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DLittle%2BGirl",
+            "edhrec": "https://edhrec.com/route/?cc=Little+Girl"
+        },
+        "purchase_uris": {
+            "tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F37883%3Fpage%3D1",
+            "cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Unhinged/Little-Girl?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+            "cardhoarder": "https://www.cardhoarder.com/cards?affiliate_id=scryfall&data%5Bsearch%5D=Little+Girl&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+        }
+    },
+	{
+        "object": "card",
+        "id": "db7c07b2-02b2-4e62-bf1b-4848e06eec28",
+        "oracle_id": "696363c9-e8a7-4c65-b65c-4a94891ec43d",
+        "multiverse_ids": [
+            655030
+        ],
+        "mtgo_id": 124089,
+        "arena_id": 90435,
+        "tcgplayer_id": 544269,
+        "cardmarket_id": 763561,
+        "name": "Gisa, the Hellraiser",
+        "lang": "en",
+        "released_at": "2024-04-19",
+        "uri": "https://api.scryfall.com/cards/db7c07b2-02b2-4e62-bf1b-4848e06eec28",
+        "scryfall_uri": "https://scryfall.com/card/otj/89/gisa-the-hellraiser?utm_source=api",
+        "layout": "normal",
+        "highres_image": true,
+        "image_status": "highres_scan",
+        "image_uris": {
+            "small": "https://cards.scryfall.io/small/front/d/b/db7c07b2-02b2-4e62-bf1b-4848e06eec28.jpg?1712355592",
+            "normal": "https://cards.scryfall.io/normal/front/d/b/db7c07b2-02b2-4e62-bf1b-4848e06eec28.jpg?1712355592",
+            "large": "https://cards.scryfall.io/large/front/d/b/db7c07b2-02b2-4e62-bf1b-4848e06eec28.jpg?1712355592",
+            "png": "https://cards.scryfall.io/png/front/d/b/db7c07b2-02b2-4e62-bf1b-4848e06eec28.png?1712355592",
+            "art_crop": "https://cards.scryfall.io/art_crop/front/d/b/db7c07b2-02b2-4e62-bf1b-4848e06eec28.jpg?1712355592",
+            "border_crop": "https://cards.scryfall.io/border_crop/front/d/b/db7c07b2-02b2-4e62-bf1b-4848e06eec28.jpg?1712355592"
+        },
+        "mana_cost": "{3}{B}{B}",
+        "cmc": 5.0,
+        "type_line": "Legendary Creature — Human Warlock",
+        "oracle_text": "Ward—{2}, Pay 2 life.\nSkeletons and Zombies you control get +1/+1 and have menace.\nWhenever you commit a crime, create two tapped 2/2 blue and black Zombie Rogue creature tokens. This ability triggers only once each turn. (Targeting opponents, anything they control, and/or cards in their graveyards is a crime.)",
+        "power": "4",
+        "toughness": "4",
+        "colors": [
+            "B"
+        ],
+        "color_identity": [
+            "B"
+        ],
+        "keywords": [
+            "Ward"
+        ],
+        "all_parts": [
+            {
+                "object": "related_card",
+                "id": "37c1ad56-cf6e-4717-a56e-feeb7339b8c3",
+                "component": "combo_piece",
+                "name": "Gisa, the Hellraiser",
+                "type_line": "Legendary Creature — Human Warlock",
+                "uri": "https://api.scryfall.com/cards/37c1ad56-cf6e-4717-a56e-feeb7339b8c3"
+            },
+            {
+                "object": "related_card",
+                "id": "74c7a0bd-6011-495a-b56c-8fa707dd7f12",
+                "component": "token",
+                "name": "Zombie Rogue",
+                "type_line": "Token Creature — Zombie Rogue",
+                "uri": "https://api.scryfall.com/cards/74c7a0bd-6011-495a-b56c-8fa707dd7f12"
+            }
+        ],
+        "legalities": {
+            "standard": "legal",
+            "future": "legal",
+            "historic": "legal",
+            "timeless": "legal",
+            "gladiator": "legal",
+            "pioneer": "legal",
+            "explorer": "legal",
+            "modern": "legal",
+            "legacy": "legal",
+            "pauper": "not_legal",
+            "vintage": "legal",
+            "penny": "not_legal",
+            "commander": "legal",
+            "oathbreaker": "legal",
+            "standardbrawl": "legal",
+            "brawl": "legal",
+            "alchemy": "legal",
+            "paupercommander": "not_legal",
+            "duel": "legal",
+            "oldschool": "not_legal",
+            "premodern": "not_legal",
+            "predh": "not_legal"
+        },
+        "games": [
+            "paper",
+            "mtgo",
+            "arena"
+        ],
+        "reserved": false,
+        "foil": true,
+        "nonfoil": true,
+        "finishes": [
+            "nonfoil",
+            "foil"
+        ],
+        "oversized": false,
+        "promo": false,
+        "reprint": false,
+        "variation": false,
+        "set_id": "55a85ebe-644e-4bef-8be8-5290408be3d1",
+        "set": "otj",
+        "set_name": "Outlaws of Thunder Junction",
+        "set_type": "expansion",
+        "set_uri": "https://api.scryfall.com/sets/55a85ebe-644e-4bef-8be8-5290408be3d1",
+        "set_search_uri": "https://api.scryfall.com/cards/search?order=set&q=e%3Aotj&unique=prints",
+        "scryfall_set_uri": "https://scryfall.com/sets/otj?utm_source=api",
+        "rulings_uri": "https://api.scryfall.com/cards/db7c07b2-02b2-4e62-bf1b-4848e06eec28/rulings",
+        "prints_search_uri": "https://api.scryfall.com/cards/search?order=released&q=oracleid%3A696363c9-e8a7-4c65-b65c-4a94891ec43d&unique=prints",
+        "collector_number": "89",
+        "digital": false,
+        "rarity": "mythic",
+        "card_back_id": "0aeebaf5-8c7d-4636-9e82-8c27447861f7",
+        "artist": "Chris Rahn",
+        "artist_ids": [
+            "7742047e-0f80-4c0f-a530-d07460165e86"
+        ],
+        "illustration_id": "0f595efb-69fc-4493-a2a0-88ae6b23102b",
+        "border_color": "black",
+        "frame": "2015",
+        "frame_effects": [
+            "legendary"
+        ],
+        "security_stamp": "oval",
+        "full_art": false,
+        "textless": false,
+        "booster": true,
+        "story_spotlight": false,
+        "edhrec_rank": 10560,
+        "prices": {
+            "usd": "9.52",
+            "usd_foil": "10.59",
+            "usd_etched": null,
+            "eur": "6.08",
+            "eur_foil": "6.78",
+            "tix": "1.53"
+        },
+        "related_uris": {
+            "gatherer": "https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=655030&printed=false",
+            "tcgplayer_infinite_articles": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Darticle%26game%3Dmagic%26partner%3Dscryfall%26q%3DGisa%252C%2Bthe%2BHellraiser",
+            "tcgplayer_infinite_decks": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&trafcat=infinite&u=https%3A%2F%2Finfinite.tcgplayer.com%2Fsearch%3FcontentMode%3Ddeck%26game%3Dmagic%26partner%3Dscryfall%26q%3DGisa%252C%2Bthe%2BHellraiser",
+            "edhrec": "https://edhrec.com/route/?cc=Gisa%2C+the+Hellraiser"
+        },
+        "purchase_uris": {
+            "tcgplayer": "https://tcgplayer.pxf.io/c/4931599/1830156/21018?subId1=api&u=https%3A%2F%2Fwww.tcgplayer.com%2Fproduct%2F544269%3Fpage%3D1",
+            "cardmarket": "https://www.cardmarket.com/en/Magic/Products/Singles/Outlaws-of-Thunder-Junction/Gisa-the-Hellraiser?referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall",
+            "cardhoarder": "https://www.cardhoarder.com/cards/124089?affiliate_id=scryfall&ref=card-profile&utm_campaign=affiliate&utm_medium=card&utm_source=scryfall"
+        }
+    }
+]
