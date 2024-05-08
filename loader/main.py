@@ -178,17 +178,6 @@ def extract() -> pd.DataFrame:
         
     return card_frame, sets_frame
 
-def prepare_cards(_cards: pd.DataFrame) -> pd.DataFrame:
-    """Add all potentially missing columns to provided cards dataframe
-    
-    Parameters:
-    _cards (pd.DataFrame): Cards frame
-    """
-    column_check = ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
-                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris", "loyalty", "type_line", "all_parts"]
-    ret_cards = _cards.reindex(_cards.columns.union(column_check, sort=False), axis=1, fill_value=pd.NA)
-    return ret_cards.loc[:, column_check]
-
 def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
     cards: pd.DataFrame = None
     faces: pd.DataFrame = None
@@ -210,6 +199,8 @@ def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
 # TODO: Make bulk inserts faster
 #       Potentionally use https://bcp.readthedocs.io/en/latest/
 def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, parts: pd.DataFrame, type_lines: pd.DataFrame, types: pd.DataFrame, rarities: pd.Series, layouts: pd.Series):
+    '''Final transformations to match DB and insert into tables '''
+
     log.info("Beginning load . . .")
     
     #region Set Type
@@ -521,8 +512,8 @@ if __name__ == "__main__":
 
     try:
         extract_cards, raw_sets = extract()
-        raw_cards = prepare_cards(extract_cards)
+        raw_cards = mt.prepare_cards(extract_cards)
         cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(raw_cards, raw_sets)
-        save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
+        # save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
     except Exception as ex:
         exit_as_failed("unhandled error occurred : " + str(ex))

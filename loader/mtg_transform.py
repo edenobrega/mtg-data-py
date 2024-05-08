@@ -3,7 +3,18 @@ import numpy as np
 import logging
 log = logging.getLogger("__main__")
 
-def get_card_faces(cards: pd.DataFrame):
+def prepare_cards(_cards: pd.DataFrame) -> pd.DataFrame:
+    """Add all potentially missing columns to provided cards dataframe
+    
+    Parameters:
+    _cards (pd.DataFrame): Cards frame
+    """
+    column_check = ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
+                              "power", "toughness", "set", "id", "cmc", "oracle_id", "rarity", "layout", "card_faces", "image_uris", "loyalty", "type_line", "all_parts"]
+    ret_cards = _cards.reindex(_cards.columns.union(column_check, sort=False), axis=1, fill_value=pd.NA)
+    return ret_cards.loc[:, column_check]
+
+def get_card_faces(cards: pd.DataFrame) -> pd.DataFrame:
     log.info("preparing card faces")
     # Cards with actual multiple faces
     column_check = ["id", "object", "name", "normal", "mana_cost", "oracle_text", "cmc", "flavor_text", "loyalty", "oracle_id", "power", "toughness"]
@@ -69,7 +80,7 @@ def get_card_faces(cards: pd.DataFrame):
     log.info("finished preparing card faces")
     return card_faces
 
-def get_card_parts(cards: pd.DataFrame):
+def get_card_parts(cards: pd.DataFrame) -> pd.DataFrame:
     log.info("preparing card parts")
     column_check = ["card_id", "object", "component", "related_card"]
     if "all_parts" not in cards:
@@ -117,13 +128,13 @@ def get_type_line_data(cards: pd.DataFrame):
     log.info("finished preparing type line data")
     return card_types_lookup, card_to_type_premap
 
-def get_rarities(cards: pd.DataFrame):
+def get_rarities(cards: pd.DataFrame) -> pd.Series:
     return cards["rarity"].drop_duplicates()
 
-def get_layouts(cards: pd.DataFrame):
+def get_layouts(cards: pd.DataFrame) -> pd.Series:
     return cards["layout"].drop_duplicates()
 
-def get_cards(_cards: pd.DataFrame):
+def get_cards(_cards: pd.DataFrame) -> pd.DataFrame:
     if "card_faces" not in _cards:
         _cards["card_faces"] = pd.NA
     cards = _cards.loc[:, ["name", "mana_cost", "oracle_text", "flavor_text", "artist", "collector_number",
