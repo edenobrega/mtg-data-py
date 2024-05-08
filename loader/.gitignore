@@ -161,10 +161,5 @@ cython_debug/
 
 # project specific
 bulk_download.json
-test_data.json
 /logs
-testing.py
 notes.txt
-/TestData/logs
-old_old_old_old.py
-mtg_transform.py
