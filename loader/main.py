@@ -514,6 +514,6 @@ if __name__ == "__main__":
         extract_cards, raw_sets = extract()
         raw_cards = mt.prepare_cards(extract_cards)
         cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(raw_cards, raw_sets)
-        # save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
+        save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
     except Exception as ex:
         exit_as_failed("unhandled error occurred : " + str(ex))
