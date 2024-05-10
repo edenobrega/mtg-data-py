@@ -6,7 +6,7 @@ CREATE TABLE [MTG].[Set] (
     [search_uri]   NVARCHAR (500) NULL,
     [set_type_id]  BIGINT         NOT NULL,
     [source_id]    NVARCHAR (100) NOT NULL,
-    [release_date] DATETIME       NULL
+    [release_date] DATE       NULL
 );
 GO
 

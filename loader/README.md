@@ -21,7 +21,7 @@ Gets data from [scryfall API](https://scryfall.com/docs/api)
         - Downloads the latest bulk .json from the scryfall API, and then saves it to the `TCGCT_BULK_NAME` location
     - LOCAL
         - Uses existing file in the provided `TCGCT_BULK_NAME` directory
-    - SETS
+    - API
         - Uses the scryfall API to get all Sets, and then loop through all sets and check if our provided DB (`TCGCT_BULK_NAME`) data matches the API
 
 ## Testing

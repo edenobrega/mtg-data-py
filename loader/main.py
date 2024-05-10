@@ -54,6 +54,7 @@ def create_connection(connection_string: str, database_name: str) -> sa.Engine:
         log.debug("connection success")
         log.debug("checking if tables exist")
         with engine.connect() as conn:
+            # TODO: Perhaps move into its own proc?
             sql = sa.text("""
                             SET NOCOUNT ON
                           
@@ -131,8 +132,7 @@ def extract() -> pd.DataFrame:
         card_frame = pd.read_json(BULK_NAME, orient='records')
         sets_frame = card_frame.loc[:, ["set_name", "set", "set_search_uri", "set_type", "set_id"]].drop_duplicates()
         log.info("finished loading from bulk data file")
-    elif LOAD_STRAT == "SETS":
-        exit_as_failed("not recommended for now")
+    elif LOAD_STRAT == "API":
         # TODO: need to rename columns to match how its like when it gets loaded from locally
         db_sets = get_from_db("SELECT [shorthand], [icon], [source_id], [release_date] FROM [MTG].[Set]")        
         # load from api
@@ -148,6 +148,16 @@ def extract() -> pd.DataFrame:
             log.critical("no data object in response")
             exit_as_failed() 
         api_frame = pd.DataFrame.from_dict(api_sets["data"])
+
+        # Get all sets that have null values
+        null_sets = get_from_db("""
+                                SELECT source_id, null as [empty]
+                                FROM [MTG].[Set]
+                                WHERE icon IS NULL OR release_date IS NULL
+                                """)
+
+        update_sets_data = api_frame.loc[api_frame["id"].isin(null_sets["source_id"]), ["id", "icon_svg_uri", "released_at"]]
+
 
         # Get all sets that dont exist in the db
         #       add missing to the update list
@@ -176,7 +186,7 @@ def extract() -> pd.DataFrame:
         log.info("finished getting card data from requests")
         card_frame = pd.DataFrame.from_dict(raw_card_data)
         
-    return card_frame, sets_frame
+    return card_frame, sets_frame, update_sets_data
 
 def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
     cards: pd.DataFrame = None
@@ -186,6 +196,7 @@ def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
     types: pd.DataFrame = None
     # TODO: ensure same columns as when comes from api and comes from bulkdata
     sets: pd.DataFrame = sets_frame.copy()
+    sets = sets.rename(columns={"id":"set_id"})
 
     rarities = mt.get_rarities(cards_raw)
     layouts = mt.get_layouts(cards_raw)
@@ -194,15 +205,57 @@ def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
     parts = mt.get_card_parts(cards_raw)
     cards = mt.get_cards(cards_raw)
 
-    return cards, faces, parts, type_lines, types, rarities, layouts, sets_frame
+    return cards, faces, parts, type_lines, types, rarities, layouts, sets
 
 # TODO: Make bulk inserts faster
 #       Potentionally use https://bcp.readthedocs.io/en/latest/
-def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, parts: pd.DataFrame, type_lines: pd.DataFrame, types: pd.DataFrame, rarities: pd.Series, layouts: pd.Series):
+def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, parts: pd.DataFrame, type_lines: pd.DataFrame, types: pd.DataFrame, rarities: pd.Series, layouts: pd.Series, sets_info: pd.DataFrame) -> None:
     '''Final transformations to match DB and insert into tables '''
 
     log.info("Beginning load . . .")
     
+    #region Update Sets
+    # TODO: This is kinda flawed, should have a way that it enters with the sets obj, might be bloating it, but would make a bit more sense
+    #           could also have the renames in the transform function, but is it worth it to put renames?
+    if sets_info.shape[0] > 0:
+        sets_info = sets_info.rename(columns={
+            "id": "source_id",
+            "icon_svg_uri": "icon",
+            "released_at": "release_date"
+        })
+
+        with engine.connect() as conn:
+            update_sql = """
+                        DECLARE @temp TABLE
+                        (
+                            source_id NVARCHAR(36), 
+                            icon NVARCHAR(300), 
+                            release_date DATE
+                        )
+
+                        INSERT INTO @temp
+                        VALUES 
+                        """
+            
+            value_array = sets_info.values
+            for val in value_array:
+                update_sql += "('"+val[0]+"', '"+val[1]+"', '"+val[2]+"'),"
+
+            update_sql = update_sql[:-1]
+
+            update_sql +=   """
+
+                            UPDATE s
+                            SET s.icon = t.icon, s.release_date = t.release_date
+                            FROM [MTG].[Set] as s
+                            JOIN @temp AS t ON t.source_id = s.source_id
+                            """
+            conn.execute(sa.text(update_sql))
+            conn.commit()
+
+        pass
+    #endregion
+
     #region Set Type
     log.info("checking for new set types")  
     tf_settypes = sets["set_type"].copy().to_frame(name="name").drop_duplicates()
@@ -484,7 +537,7 @@ if __name__ == "__main__":
     if DB_NAME is None:
         exit_as_failed("no db name defined")
 
-    if LOAD_STRAT is None or LOAD_STRAT not in ["LOCAL", "DOWNLOAD", "SETS"]:
+    if LOAD_STRAT is None or LOAD_STRAT not in ["LOCAL", "DOWNLOAD", "API"]:
         exit_as_failed("No LOAD_STRAT defined")
 
     if LOG_LEVEL is None:
@@ -511,9 +564,9 @@ if __name__ == "__main__":
     log.info("loader started")
 
     try:
-        extract_cards, raw_sets = extract()
+        extract_cards, raw_sets, sets_info = extract()
         raw_cards = mt.prepare_cards(extract_cards)
         cards, faces, parts, type_lines, types, rarities, layouts, sets = transform(raw_cards, raw_sets)
-        save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts)
+        save_to_db(cards, sets, faces, parts, type_lines, types, rarities, layouts, sets_info)
     except Exception as ex:
         exit_as_failed("unhandled error occurred : " + str(ex))
