@@ -97,6 +97,7 @@ def create_connection(connection_string: str, database_name: str) -> sa.Engine:
 def extract() -> pd.DataFrame:
     card_frame: pd.DataFrame = None
     sets_frame: pd.DataFrame = None
+    update_sets_data: pd.DataFrame = None
 
     if LOAD_STRAT == "DOWNLOAD":
         log.info("downloading bulk data")
@@ -215,8 +216,6 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     log.info("Beginning load . . .")
     
     #region Update Sets
-    # TODO: This is kinda flawed, should have a way that it enters with the sets obj, might be bloating it, but would make a bit more sense
-    #           could also have the renames in the transform function, but is it worth it to put renames?
     if sets_info.shape[0] > 0:
         sets_info = sets_info.rename(columns={
             "id": "source_id",
@@ -252,8 +251,6 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
                             """
             conn.execute(sa.text(update_sql))
             conn.commit()
-
-        pass
     #endregion
 
     #region Set Type
@@ -283,15 +280,20 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         new_sets = new_sets.rename(columns={
             "set_id":"source_id",
             "set":"shorthand",
+            "code":"shorthand",
             "set_search_uri":"search_uri",
             "set_type":"set_type_id",
-            "set_name":"name"
+            "set_name":"name",
+            "icon_svg_uri":"icon",
+            "released_at":"release_date"
         })
         settype_lookup = get_from_db("select [id], [name] from [MTG].[SetType]").set_index("name")
         settype_lookup["id"] = settype_lookup["id"].astype("str")
         settype_lookup = settype_lookup.to_dict()["id"]
         new_sets["set_type_id"] = new_sets["set_type_id"].map(settype_lookup)
         new_sets["set_type_id"] = new_sets["set_type_id"].astype("int")
+        if LOAD_STRAT == "API":
+            new_sets = new_sets.loc[:, ["source_id", "shorthand", "search_uri", "set_type_id", "name", "icon", "release_date"]]
         new_sets.to_sql(
             schema="MTG",
             name="Set",
@@ -423,8 +425,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
                                 FROM [MTG].[CardFace] AS cf
                                 JOIN [MTG].[Card] AS c ON c.id = cf.CardID                                
                                 """)
-    # because these are nested in a obj, you would have to reload a card again to check if its face exists, so the chances are we dont need to check for duplicates, but will do so anyway
-    #       in case of trying to reload specific cards by deleting them from the db  i guess
+
     new_card_faces: pd.DataFrame = faces.copy().loc[~faces["id"].isin(db_card_faces["source_id"])]
     if new_card_faces.shape[0] > 0:
         # map the datbase card id to the object 
@@ -524,12 +525,36 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
 
 if __name__ == "__main__":
     load_dotenv()
+    try:
+        BULK_NAME = getenv("TCGCT_BULK_NAME")
+        LOG_LEVEL = int(getenv('TCGCT_LOG_LEVEL'))
+        LOAD_STRAT = str(getenv("TCGCT_LOAD_STRAT"))
+        DB_NAME = getenv("TCGCT_DB_NAME")    
+        CONN = getenv("TCGCT_CONNECTION_STRING").replace("##DB_NAME##", DB_NAME)
+    except Exception as ex:
+        print("something went wrong when getting env : "+ex)
 
-    BULK_NAME = getenv("TCGCT_BULK_NAME")
-    LOG_LEVEL = int(getenv('TCGCT_LOG_LEVEL'))
-    LOAD_STRAT = str(getenv("TCGCT_LOAD_STRAT"))
-    DB_NAME = getenv("TCGCT_DB_NAME")    
-    CONN = getenv("TCGCT_CONNECTION_STRING").replace("##DB_NAME##", DB_NAME)
+    if LOG_LEVEL is None:
+        LOG_LEVEL = 20
+
+    if BULK_NAME is None:
+        BULK_NAME = "data/bulk_data.json"
+
+    if not path.isdir('logs'):
+        mkdir('logs/')
+
+    LOG_TO_CONSOLE = False
+
+    if LOG_TO_CONSOLE:
+        lo.basicConfig(level=lo._levelToName[LOG_LEVEL],
+                        format='%(asctime)s | %(levelname)s | Line:%(lineno)s | %(message)s',
+                        )
+    else:
+        lo.basicConfig(level=lo._levelToName[LOG_LEVEL],
+                        filename='logs/'+str(dt.datetime.today().date())+'.txt',
+                        format='%(asctime)s | %(levelname)s | Line:%(lineno)s | %(message)s',
+                        filemode='a'
+                        )
 
     if CONN is None:
         exit_as_failed("no connection string defined")
@@ -540,20 +565,8 @@ if __name__ == "__main__":
     if LOAD_STRAT is None or LOAD_STRAT not in ["LOCAL", "DOWNLOAD", "API"]:
         exit_as_failed("No LOAD_STRAT defined")
 
-    if LOG_LEVEL is None:
-        LOG_LEVEL = 20
-
-    if BULK_NAME is None:
-        BULK_NAME = "data/bulk_data.json"
-
-    if not path.isdir('logs'):
-        mkdir('logs\\')
-
-    lo.basicConfig(level=lo._levelToName[LOG_LEVEL],
-                    filename='logs\\'+str(dt.datetime.today().date())+'.txt',
-                    format='%(asctime)s | %(levelname)s | Line:%(lineno)s | %(message)s',
-                    filemode='a')
     log = lo.getLogger(__name__)
+
 
     for foreignLogger in lo.Logger.manager.loggerDict:
         if foreignLogger not in [__name__]:
