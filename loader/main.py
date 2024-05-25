@@ -45,8 +45,24 @@ def request_set_cards(_uri, data):
         data = request_set_cards(req_data["next_page"], data)
     return data
 
-def create_connection(connection_string: str, database_name: str) -> sa.Engine:
-    engine = sa.create_engine(connection_string)
+def create_connection(db_name: str, db_location: str, db_driver: str, db_protected: bool, db_username: str, db_password: str) -> sa.Engine:
+    if db_protected:
+        connection_url = sa.URL.create(
+            "mssql+pyodbc",
+            username=db_username,
+            password=db_password,
+            host=db_location,
+            database=db_name,
+            query={"driver": db_driver},
+        )
+    else:
+        connection_url = sa.URL.create(
+            "mssql+pyodbc",
+            host=db_location,
+            database=db_name,
+            query={"driver": db_driver},
+        )
+    engine = sa.create_engine(connection_url)
     try:
         log.debug("testing db connection")
         with engine.connect() as conn:
@@ -82,7 +98,7 @@ def create_connection(connection_string: str, database_name: str) -> sa.Engine:
                             ) AS a
                             WHERE a.[Count] = (SELECT COUNT(1) FROM @tablenames)
                         """)
-            sql = sql.bindparams(db_name=database_name)
+            sql = sql.bindparams(db_name=db_name)
             schema_check = conn.execute(sql).one_or_none()
             if schema_check is None:
                 log.critical("tables are missing from the schema")
@@ -526,11 +542,22 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
 if __name__ == "__main__":
     load_dotenv()
     try:
+        # TODO: Seperate connection string into parts and have each added at run time, and so that docker can have us pass the connectionstring as a value
         BULK_NAME = getenv("TCGCT_BULK_NAME")
         LOG_LEVEL = int(getenv('TCGCT_LOG_LEVEL'))
         LOAD_STRAT = str(getenv("TCGCT_LOAD_STRAT"))
-        DB_NAME = getenv("TCGCT_DB_NAME")    
-        CONN = getenv("TCGCT_CONNECTION_STRING").replace("##DB_NAME##", DB_NAME)
+        DB_NAME = getenv("TCGCT_DB_NAME")
+        DB_LOCATION = getenv("TCGCT_DB_LOCATION")
+        DB_DRIVER = getenv("TCGCT_DB_DRIVER")
+        DB_PROTECTED = getenv("TCGCT_DB_PROTECTED") == "True"
+        if DB_PROTECTED == True:
+            DB_USERNAME = getenv("TCGCT_DB_USERNAME")
+            DB_PASSWORD = getenv("TCGCT_DB_PASSWORD")
+        else:
+            DB_USERNAME = None
+            DB_PASSWORD = None
+        
+
     except Exception as ex:
         print("something went wrong when getting env : "+ex)
 
@@ -544,6 +571,7 @@ if __name__ == "__main__":
         mkdir('logs/')
 
     LOG_TO_CONSOLE = False
+    log = lo.getLogger(__name__)
 
     if LOG_TO_CONSOLE:
         lo.basicConfig(level=lo._levelToName[LOG_LEVEL],
@@ -556,8 +584,19 @@ if __name__ == "__main__":
                         filemode='a'
                         )
 
-    if CONN is None:
+    log.info("loader started")
+
+    if DB_PROTECTED:
+        if DB_USERNAME is None:
+            exit_as_failed("no username defined")
+        if DB_PASSWORD is None:
+            exit_as_failed("no password defined")
+
+    if DB_LOCATION is None or DB_LOCATION is None:
         exit_as_failed("no connection string defined")
+
+    if DB_DRIVER is None:
+        exit_as_failed("no database driver string defined")
 
     if DB_NAME is None:
         exit_as_failed("no db name defined")
@@ -565,16 +604,11 @@ if __name__ == "__main__":
     if LOAD_STRAT is None or LOAD_STRAT not in ["LOCAL", "DOWNLOAD", "API"]:
         exit_as_failed("No LOAD_STRAT defined")
 
-    log = lo.getLogger(__name__)
-
-
     for foreignLogger in lo.Logger.manager.loggerDict:
         if foreignLogger not in [__name__]:
             lo.getLogger(foreignLogger).disabled = True
 
-    engine = create_connection(CONN, DB_NAME)
-
-    log.info("loader started")
+    engine = create_connection(DB_NAME, DB_LOCATION, DB_DRIVER, DB_PROTECTED, DB_USERNAME, DB_PASSWORD)
 
     try:
         extract_cards, raw_sets, sets_info = extract()
