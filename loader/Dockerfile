@@ -22,10 +22,4 @@ RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install -r requirements.txt
 
-ENV TCGCT_LOG_LEVEL=10
-ENV TCGCT_DB_NAME="tcgct-test"
-ENV TCGCT_CONNECTION_STRING="mssql+pyodbc://host.docker.internal:49172\SQLEXPRESS/##DB_NAME##?driver=ODBC+Driver+17+for+SQL+Server"
-ENV TCGCT_BULK_NAME="data/bulk_data.json"
-ENV TCGCT_LOAD_STRAT="API"
-
 # CMD ["python", "main.py"]
