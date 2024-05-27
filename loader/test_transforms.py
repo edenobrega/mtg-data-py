@@ -17,10 +17,10 @@ class TestTransforms(unittest.TestCase):
         ETL.LOG_LEVEL = int(getenv('TCGCT_TEST_LOG_LEVEL'))
         ETL.LOAD_STRAT = str(getenv("TCGCT_TEST_LOAD_STRAT"))
         ETL.log = logging.getLogger(__name__)
-        _cards, _sets = ETL.extract()
+        _cards, _sets, _sets_data = ETL.extract()
         
         ETL.BULK_NAME = getenv("TCGCT_TEST_FACES_BULK_NAME")
-        _card_faces, _discard = ETL.extract()
+        _card_faces, _discard, _discard = ETL.extract()
         
         cls.cards: pd.DataFrame = _cards
         cls.sets: pd.DataFrame = _sets
