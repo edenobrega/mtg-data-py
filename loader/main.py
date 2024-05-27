@@ -113,7 +113,7 @@ def create_connection(db_name: str, db_location: str, db_driver: str, db_protect
 def extract() -> pd.DataFrame:
     card_frame: pd.DataFrame = None
     sets_frame: pd.DataFrame = None
-    update_sets_data: pd.DataFrame = None
+    update_sets_data: pd.DataFrame = pd.DataFrame()
 
     if LOAD_STRAT == "DOWNLOAD":
         log.info("downloading bulk data")
@@ -150,7 +150,6 @@ def extract() -> pd.DataFrame:
         sets_frame = card_frame.loc[:, ["set_name", "set", "set_search_uri", "set_type", "set_id"]].drop_duplicates()
         log.info("finished loading from bulk data file")
     elif LOAD_STRAT == "API":
-        # TODO: need to rename columns to match how its like when it gets loaded from locally
         db_sets = get_from_db("SELECT [shorthand], [icon], [source_id], [release_date] FROM [MTG].[Set]")        
         # load from api
         SETS_API_URI = "https://api.scryfall.com/sets"
@@ -206,21 +205,23 @@ def extract() -> pd.DataFrame:
     return card_frame, sets_frame, update_sets_data
 
 def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
-    cards: pd.DataFrame = None
-    faces: pd.DataFrame = None
-    parts: pd.DataFrame = None
-    type_lines: pd.DataFrame = None
-    types: pd.DataFrame = None
-    # TODO: ensure same columns as when comes from api and comes from bulkdata
+    cards: pd.DataFrame = pd.DataFrame()
+    faces: pd.DataFrame = pd.DataFrame()
+    parts: pd.DataFrame = pd.DataFrame()
+    type_lines: pd.DataFrame = pd.DataFrame()
+    types: pd.DataFrame = pd.DataFrame()
+    rarities: pd.DataFrame = pd.DataFrame()
+    layouts: pd.DataFrame = pd.DataFrame()
+
     sets: pd.DataFrame = sets_frame.copy()
     sets = sets.rename(columns={"id":"set_id"})
-
-    rarities = mt.get_rarities(cards_raw)
-    layouts = mt.get_layouts(cards_raw)
-    types, type_lines = mt.get_type_line_data(cards_raw)
-    faces = mt.get_card_faces(cards_raw)
-    parts = mt.get_card_parts(cards_raw)
-    cards = mt.get_cards(cards_raw)
+    if cards_raw.shape[0] > 0:
+        rarities = mt.get_rarities(cards_raw)
+        layouts = mt.get_layouts(cards_raw)
+        types, type_lines = mt.get_type_line_data(cards_raw)
+        faces = mt.get_card_faces(cards_raw)
+        parts = mt.get_card_parts(cards_raw)
+        cards = mt.get_cards(cards_raw)
 
     return cards, faces, parts, type_lines, types, rarities, layouts, sets
 
@@ -324,217 +325,240 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
 
     #region Rarity
     log.info("checking for new rarities")
-    db_rarities = get_from_db("select [name] from [MTG].[Rarity]")
-    new_rarities = rarities.copy().loc[~rarities.isin(db_rarities["name"])]
-    if new_rarities.shape[0] > 0:
-        new_rarities.name = "name"
-        new_rarities.to_sql(
-            schema="MTG",
-            name="Rarity",
-            con=engine,
-            index=False,
-            if_exists="append"
-        )
-        log.info("new rarities added")
+    if rarities.empty == False:
+        db_rarities = get_from_db("select [name] from [MTG].[Rarity]")
+        new_rarities = rarities.copy().loc[~rarities.isin(db_rarities["name"])]
+        if new_rarities.shape[0] > 0:
+            new_rarities.name = "name"
+            new_rarities.to_sql(
+                schema="MTG",
+                name="Rarity",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
+            log.info("new rarities added")
+        else:
+            log.info("no new rarities found")
     else:
         log.info("no new rarities found")
     #endregion
 
     #region Layout
     log.info("checking for new layouts")
-    db_layouts = get_from_db("select [name] from [MTG].[Layout]")
-    new_layouts = layouts.copy().loc[~layouts.isin(db_layouts["name"])]
-    if new_layouts.shape[0] > 0:
-        new_layouts.name = "name"
-        new_layouts.to_sql(
-            schema="MTG",
-            name="Layout",
-            con=engine,
-            index=False,
-            if_exists="append"
-        )
-        log.info("new layouts added")
+
+    if layouts.empty == False:
+        db_layouts = get_from_db("select [name] from [MTG].[Layout]")
+        new_layouts = layouts.copy().loc[~layouts.isin(db_layouts["name"])]        
+        if new_layouts.shape[0] > 0:
+            new_layouts.name = "name"
+            new_layouts.to_sql(
+                schema="MTG",
+                name="Layout",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
+            log.info("new layouts added")
+        else:
+            log.info("no new layouts found")
     else:
         log.info("no new layouts found")
     #endregion
 
     #region Card Types
-    db_card_types = get_from_db("SELECT [name] FROM [MTG].[CardType]")
-    new_card_types: pd.DataFrame = types.loc[~types["type_line"].isin(db_card_types["name"])].copy()
-    if new_card_types.shape[0] > 0:
-        new_card_types = new_card_types.rename(columns={"type_line":"name"})
-        log.info("adding new card types . . .")
-        new_card_types.to_sql(
-            schema="MTG",
-            name="CardType",
-            con=engine,
-            index=False,
-            if_exists="append"
-        )
-        log.info("new card types added")
+    log.info("checking for new card types")
+    if types.empty == False:
+        db_card_types = get_from_db("SELECT [name] FROM [MTG].[CardType]")
+        new_card_types: pd.DataFrame = types.loc[~types["type_line"].isin(db_card_types["name"])].copy()
+        if new_card_types.shape[0] > 0:
+            new_card_types = new_card_types.rename(columns={"type_line":"name"})
+            log.info("adding new card types . . .")
+            new_card_types.to_sql(
+                schema="MTG",
+                name="CardType",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
+            log.info("new card types added")
+        else:
+            log.info("no new card types to add")
     else:
         log.info("no new card types to add")
     #endregion
 
     #region Card
     log.info("checking for new cards")
-    db_card_ids = get_from_db("SELECT [source_id], [id] FROM [MTG].[Card]")
-    new_cards: pd.DataFrame = cards.copy().loc[~cards["id"].isin(db_card_ids["source_id"])]
-    if new_cards.shape[0] > 0:
-        rarity_lookup = get_from_db("select [id], [name] from [MTG].[Rarity]").set_index("name")
-        layout_lookup = get_from_db("select [id], [name] from [MTG].[Layout]").set_index("name")
-        set_lookup = get_from_db("SELECT [id], [shorthand] FROM [MTG].[Set]").set_index("shorthand")
-        
-        rarity_lookup["id"] = rarity_lookup["id"].astype("str")
-        layout_lookup["id"] = layout_lookup["id"].astype("str")
-        set_lookup["id"] = set_lookup["id"].astype("str")
+    if cards.empty == False:
+        db_card_ids = get_from_db("SELECT [source_id], [id] FROM [MTG].[Card]")
+        new_cards: pd.DataFrame = cards.copy().loc[~cards["id"].isin(db_card_ids["source_id"])]
+        if new_cards.shape[0] > 0:
+            rarity_lookup = get_from_db("select [id], [name] from [MTG].[Rarity]").set_index("name")
+            layout_lookup = get_from_db("select [id], [name] from [MTG].[Layout]").set_index("name")
+            set_lookup = get_from_db("SELECT [id], [shorthand] FROM [MTG].[Set]").set_index("shorthand")
+            
+            rarity_lookup["id"] = rarity_lookup["id"].astype("str")
+            layout_lookup["id"] = layout_lookup["id"].astype("str")
+            set_lookup["id"] = set_lookup["id"].astype("str")
 
-        rarity_lookup = rarity_lookup.to_dict()["id"]
-        layout_lookup = layout_lookup.to_dict()["id"]
-        set_lookup = set_lookup.to_dict()["id"]
+            rarity_lookup = rarity_lookup.to_dict()["id"]
+            layout_lookup = layout_lookup.to_dict()["id"]
+            set_lookup = set_lookup.to_dict()["id"]
 
-        new_cards["rarity"] = new_cards["rarity"].map(rarity_lookup)
-        new_cards["layout"] = new_cards["layout"].map(layout_lookup)
-        new_cards["set"] = new_cards["set"].map(set_lookup)
+            new_cards["rarity"] = new_cards["rarity"].map(rarity_lookup)
+            new_cards["layout"] = new_cards["layout"].map(layout_lookup)
+            new_cards["set"] = new_cards["set"].map(set_lookup)
 
-        new_cards["rarity"] = new_cards["rarity"].astype("int")
-        new_cards["layout"] = new_cards["layout"].astype("int")
-        new_cards["set"] = new_cards["set"].astype("int")
+            new_cards["rarity"] = new_cards["rarity"].astype("int")
+            new_cards["layout"] = new_cards["layout"].astype("int")
+            new_cards["set"] = new_cards["set"].astype("int")
 
-        new_cards["collector_number"] = new_cards["collector_number"].astype("str")
+            new_cards["collector_number"] = new_cards["collector_number"].astype("str")
 
-        # TODO: move this into its own reusable function
-        new_cards["power"] = np.where(pd.isnull(new_cards["power"]),new_cards["power"],new_cards["power"].astype("str"))
-        new_cards["toughness"] = np.where(pd.isnull(new_cards["toughness"]),new_cards["toughness"],new_cards["toughness"].astype("str"))
-        new_cards["loyalty"] = np.where(pd.isnull(new_cards["loyalty"]),new_cards["loyalty"],new_cards["loyalty"].astype("str"))
+            # TODO: move this into its own reusable function
+            new_cards["power"] = np.where(pd.isnull(new_cards["power"]),new_cards["power"],new_cards["power"].astype("str"))
+            new_cards["toughness"] = np.where(pd.isnull(new_cards["toughness"]),new_cards["toughness"],new_cards["toughness"].astype("str"))
+            new_cards["loyalty"] = np.where(pd.isnull(new_cards["loyalty"]),new_cards["loyalty"],new_cards["loyalty"].astype("str"))
 
-        new_cards.loc[new_cards["mana_cost"] == "", "mana_cost"] = None
+            new_cards.loc[new_cards["mana_cost"] == "", "mana_cost"] = None
 
-        new_cards = new_cards.rename(columns={
-            "oracle_text":"text",
-            "flavor_text":"flavor",
-            "set": "card_set_id",
-            "id":"source_id",
-            "cmc":"converted_cost",
-            "normal":"image",
-            "rarity": "rarity_id",
-            "layout": "layout_id"
-        })
+            new_cards = new_cards.rename(columns={
+                "oracle_text":"text",
+                "flavor_text":"flavor",
+                "set": "card_set_id",
+                "id":"source_id",
+                "cmc":"converted_cost",
+                "normal":"image",
+                "rarity": "rarity_id",
+                "layout": "layout_id"
+            })
 
-        log.info("adding new cards . . .")
-        new_cards.to_sql(
-            schema="MTG",
-            name="Card",
-            con=engine,
-            index=False,
-            if_exists="append"
-        )
+            log.info("adding new cards . . .")
+            new_cards.to_sql(
+                schema="MTG",
+                name="Card",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
 
-        log.info("new cards added")
+            log.info("new cards added")
+        else:
+            log.info("no new cards found")
     else:
         log.info("no new cards found")
     #endregion
 
     #region Card Face
-    db_card_faces = get_from_db("""
-                                SELECT DISTINCT c.source_id
-                                FROM [MTG].[CardFace] AS cf
-                                JOIN [MTG].[Card] AS c ON c.id = cf.CardID                                
-                                """)
+    log.info("checking for new card faces")
+    if faces.empty == False:
+        db_card_faces = get_from_db("""
+                                    SELECT DISTINCT c.source_id
+                                    FROM [MTG].[CardFace] AS cf
+                                    JOIN [MTG].[Card] AS c ON c.id = cf.CardID                                
+                                    """)
 
-    new_card_faces: pd.DataFrame = faces.copy().loc[~faces["id"].isin(db_card_faces["source_id"])]
-    if new_card_faces.shape[0] > 0:
-        # map the datbase card id to the object 
-        db_card_dict = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
-        new_card_faces["id"] = new_card_faces["id"].map(db_card_dict)
-        new_card_faces["id"] = new_card_faces["id"].astype("int")
-        new_card_faces = new_card_faces.drop(["index"], axis=1)
+        new_card_faces: pd.DataFrame = faces.copy().loc[~faces["id"].isin(db_card_faces["source_id"])]
+        if new_card_faces.shape[0] > 0:
+            # map the datbase card id to the object 
+            db_card_dict = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
+            new_card_faces["id"] = new_card_faces["id"].map(db_card_dict)
+            new_card_faces["id"] = new_card_faces["id"].astype("int")
+            new_card_faces = new_card_faces.drop(["index"], axis=1)
 
-        new_card_faces = new_card_faces.rename(columns={
-            "id": "CardID",
-            "cmc": "ConvertedCost",
-            "flavor_text": "FlavourText",
-            "oracle_id": "OracleID"
-        })
-        log.info("adding new card faces . . .")
+            new_card_faces = new_card_faces.rename(columns={
+                "id": "CardID",
+                "cmc": "ConvertedCost",
+                "flavor_text": "FlavourText",
+                "oracle_id": "OracleID"
+            })
+            log.info("adding new card faces . . .")
 
 
-        new_card_faces.to_sql(
-            schema="MTG",
-            name="CardFace",
-            con=engine,
-            index=False,
-            if_exists="append"
-        )
-        log.info("new card faces added")
+            new_card_faces.to_sql(
+                schema="MTG",
+                name="CardFace",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
+            log.info("new card faces added")
+        else:
+            log.info("no new card faces found")
     else:
         log.info("no new card faces found")
     #endregion
 
     #region Card Part
     log.info("checking for new card parts")
-    db_card_parts = get_from_db("""
-                                SELECT cid.source_id AS [card_id], [object], [component], cpa.RelatedOracleID AS [related_card]
-                                FROM [MTG].[CardPart] AS cpa
-                                JOIN [MTG].[Card] AS cid ON cpa.CardID = cid.id
-                                """)
-    new_card_parts = pd.concat([parts.copy(), db_card_parts]).drop_duplicates(keep=False)
+    if parts.empty == False:
+        db_card_parts = get_from_db("""
+                                    SELECT cid.source_id AS [card_id], [object], [component], cpa.RelatedOracleID AS [related_card]
+                                    FROM [MTG].[CardPart] AS cpa
+                                    JOIN [MTG].[Card] AS cid ON cpa.CardID = cid.id
+                                    """)
+        new_card_parts = pd.concat([parts.copy(), db_card_parts]).drop_duplicates(keep=False)
 
-    if "db_card_dict" not in locals():
-        db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
+        if "db_card_dict" not in locals():
+            db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
 
-    new_card_parts["card_id"] = new_card_parts["card_id"].map(db_card_dict)
+        new_card_parts["card_id"] = new_card_parts["card_id"].map(db_card_dict)
 
-    new_card_parts = new_card_parts.rename(columns={
-        "card_id": "CardID",
-        "related_card": "RelatedOracleID",
-        "component": "Component",
-        "object": "Object"
-    })
+        new_card_parts = new_card_parts.rename(columns={
+            "card_id": "CardID",
+            "related_card": "RelatedOracleID",
+            "component": "Component",
+            "object": "Object"
+        })
 
-    if new_card_parts.shape[0] > 0:
-        log.info("adding new card parts . . .")
-        new_card_parts.to_sql(
-            schema="MTG",
-            name="CardPart",
-            con=engine,
-            index=False,
-            if_exists="append"
-        )
+        if new_card_parts.shape[0] > 0:
+            log.info("adding new card parts . . .")
+            new_card_parts.to_sql(
+                schema="MTG",
+                name="CardPart",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
 
-        log.info("new card parts added")
+            log.info("new card parts added")
+        else:
+            log.info("no new card parts found")
     else:
         log.info("no new card parts found")
     #endregion
 
     #region Card Type Line
-    if "db_card_dict" not in locals():
-        db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
+    log.info("checking for new card type lines")
+    if type_lines.empty == False:
+        if "db_card_dict" not in locals():
+            db_card_dict: pd.DataFrame = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
 
-    db_card_types: pd.DataFrame = get_from_db("SELECT [id], [name] FROM [MTG].[CardType]").set_index("name").to_dict()["id"]
-    db_type_lines: pd.DataFrame = get_from_db("SELECT [card_id], [type_id], [order] FROM [MTG].[TypeLine]")
-    if type_lines.shape[0] > 0:
-        card_to_type: pd.DataFrame = type_lines.copy()
-        card_to_type["order"] = card_to_type.groupby("id").cumcount().add(1)
-        card_to_type["id"] = card_to_type["id"].map(db_card_dict)
-        card_to_type["type_id"] = card_to_type["type_name"].map(db_card_types)
-        card_to_type = card_to_type.drop(["type_name"], axis=1)
-        card_to_type = card_to_type.rename(columns={
-            "id":"card_id",
-            "type_name":"type_id"
-        })
-        new_type_lines: pd.DataFrame = pd.concat([db_type_lines, card_to_type]).drop_duplicates(keep=False)
+        db_card_types: pd.DataFrame = get_from_db("SELECT [id], [name] FROM [MTG].[CardType]").set_index("name").to_dict()["id"]
+        db_type_lines: pd.DataFrame = get_from_db("SELECT [card_id], [type_id], [order] FROM [MTG].[TypeLine]")
+        if type_lines.shape[0] > 0:
+            card_to_type: pd.DataFrame = type_lines.copy()
+            card_to_type["order"] = card_to_type.groupby("id").cumcount().add(1)
+            card_to_type["id"] = card_to_type["id"].map(db_card_dict)
+            card_to_type["type_id"] = card_to_type["type_name"].map(db_card_types)
+            card_to_type = card_to_type.drop(["type_name"], axis=1)
+            card_to_type = card_to_type.rename(columns={
+                "id":"card_id",
+                "type_name":"type_id"
+            })
+            new_type_lines: pd.DataFrame = pd.concat([db_type_lines, card_to_type]).drop_duplicates(keep=False)
 
-        log.info("adding new card type lines . . .")
-        new_type_lines.to_sql(
-            schema="MTG",
-            name="TypeLine",
-            con=engine,
-            index=False,
-            if_exists="append"
-        )
+            log.info("adding new card type lines . . .")
+            new_type_lines.to_sql(
+                schema="MTG",
+                name="TypeLine",
+                con=engine,
+                index=False,
+                if_exists="append"
+            )
 
-        log.info("new card type lines added")
+            log.info("new card type lines added")
     #endregion
     
     log.info("finished loading data")
@@ -542,7 +566,6 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
 if __name__ == "__main__":
     load_dotenv()
     try:
-        # TODO: Seperate connection string into parts and have each added at run time, and so that docker can have us pass the connectionstring as a value
         BULK_NAME = getenv("TCGCT_BULK_NAME")
         LOG_LEVEL = int(getenv('TCGCT_LOG_LEVEL'))
         LOAD_STRAT = str(getenv("TCGCT_LOAD_STRAT"))
