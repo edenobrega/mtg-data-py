@@ -582,7 +582,7 @@ if __name__ == "__main__":
         
 
     except Exception as ex:
-        print("something went wrong when getting env : "+ex)
+        print("something went wrong when getting env : "+str(ex))
 
     if LOG_LEVEL is None:
         LOG_LEVEL = 20
