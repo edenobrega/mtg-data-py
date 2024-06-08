@@ -1,0 +1,1 @@
+docker build -t mtg_loader:v0.0.1 .
