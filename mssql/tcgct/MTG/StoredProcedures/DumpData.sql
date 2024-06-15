@@ -1,14 +1,14 @@
-CREATE     procedure [MTG].[DumpData]
+CREATE PROCEDURE [MTG].[DumpData]
 as
-    delete from mtg.CardPart
-    delete from mtg.CardFace
-    delete from mtg.TypeLine
-    delete from mtg.Card
-    delete from mtg.Layout
-    delete from mtg.Rarity
-    delete from mtg.[Set]
-    delete from mtg.SetType
-    delete from mtg.CardType
+    DELETE FROM [MTG].[CardPart]
+    DELETE FROM [MTG].[CardFace]
+    DELETE FROM [MTG].[TypeLine]
+    DELETE FROM [MTG].[Card]
+    DELETE FROM [MTG].[Layout]
+    DELETE FROM [MTG].[Rarity]
+    DELETE FROM [MTG].[Set]
+    DELETE FROM [MTG].[SetType]
+    DELETE FROM [MTG].[CardType]
 
     DBCC CHECKIDENT ('[MTG].[CardPart]', RESEED, 0);
     DBCC CHECKIDENT ('[MTG].[Card]', RESEED, 0);

@@ -61,6 +61,10 @@
     <Folder Include="MTG\Tables" />
     <Folder Include="MTG\Views" />
     <Folder Include="Security" />
+    <Folder Include="Collection" />
+    <Folder Include="Collection\Tables" />
+    <Folder Include="Account" />
+    <Folder Include="Account\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="MTG\StoredProcedures\DumpData.sql" />
@@ -76,6 +80,10 @@
     <Build Include="MTG\Tables\TypeLine.sql" />
     <Build Include="MTG\Views\TableCounts.sql" />
     <Build Include="Security\MTG.sql" />
+    <Build Include="Collection\Tables\CollectedCards_MTG.sql" />
+    <Build Include="Security\Collection.sql" />
+    <Build Include="Security\Account.sql" />
+    <Build Include="Account\Tables\User.sql" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="'$(NetCoreBuild)' == 'true'">
