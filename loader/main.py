@@ -70,7 +70,6 @@ def create_connection(db_name: str, db_location: str, db_driver: str, db_protect
         log.debug("connection success")
         log.debug("checking if tables exist")
         with engine.connect() as conn:
-            # TODO: Perhaps move into its own proc?
             sql = sa.text("""
                             SET NOCOUNT ON
                           
