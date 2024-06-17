@@ -1,9 +1,8 @@
-CREATE TABLE [Collection].[CollectedCards_MTG]
-(
-	[Id] INT NOT NULL PRIMARY KEY, 
-    [UserID] UNIQUEIDENTIFIER NOT NULL, 
-    [CardID] INT NOT NULL
-)
+CREATE TABLE [Collection].[CollectedCards_MTG] (
+    [UserID] INT NOT NULL,
+    [CardID] INT NOT NULL,
+    [Count]  INT NOT NULL
+);
 
 GO
 

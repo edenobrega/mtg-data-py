@@ -1,6 +1,13 @@
-﻿CREATE TABLE [Account].[User]
-(
-	[ID] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, 
-    [Name] NVARCHAR(250) NOT NULL, 
-    [Password] NVARCHAR(MAX) NOT NULL
-)
+CREATE TABLE [Account].[User] (
+    [ID]       INT              IDENTITY (1, 1) NOT NULL,
+    [UID]      UNIQUEIDENTIFIER CONSTRAINT [DEFAULT_User_ID] DEFAULT (newid()) NOT NULL,
+    [Username] NVARCHAR (250)   NOT NULL,
+    [Password] NVARCHAR (MAX)   NOT NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC, [UID] ASC)
+);
+
+GO
+ALTER TABLE [Account].[User]
+    ADD CONSTRAINT [DEFAULT_User_ID] DEFAULT (newid()) FOR [UID];
+GO
+
