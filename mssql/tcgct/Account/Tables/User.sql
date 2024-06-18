@@ -5,9 +5,4 @@ CREATE TABLE [Account].[User] (
     [Password] NVARCHAR (MAX)   NOT NULL,
     PRIMARY KEY CLUSTERED ([ID] ASC, [UID] ASC)
 );
-
 GO
-ALTER TABLE [Account].[User]
-    ADD CONSTRAINT [DEFAULT_User_ID] DEFAULT (newid()) FOR [UID];
-GO
-
