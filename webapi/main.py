@@ -1,4 +1,3 @@
-
 import sqlalchemy as sa
 import logging as lo
 import datetime as dt
@@ -19,7 +18,7 @@ APP_SETTINGS = {
 
 SECRET_KEY = "f72d92297881a44e0f56cbdd8b32a7bde4a79ae33c8c1e23ded845100605755f"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 0.25
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 def lifespan(app: FastAPI):
     load_dotenv()
@@ -69,9 +68,6 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-class TokenData(BaseModel):
-    username: str | None = None
-
 class CollectionUpdateItem(BaseModel):
     # Set Code, Card ID, Change Amount
     ids: list[tuple[str, str, int]]
@@ -81,7 +77,10 @@ class CreateUserItem(BaseModel):
     password: str
 
 class User(BaseModel):
-    username: str    
+    id: int
+    uid: str
+    username: str
+    password: str
 #endregion
 
 #region Helpers
@@ -105,6 +104,17 @@ def create_connection(db_name: str, db_location: str, db_driver: str, db_usernam
     app.logger.debug("connection success")
     return engine
 
+def get_user(username: str) -> User | None:
+    engine: sa.Engine = create_connection(APP_SETTINGS["DB_NAME"], APP_SETTINGS["DB_LOCATION"], APP_SETTINGS["DB_DRIVER"], APP_SETTINGS["DB_USERNAME"], APP_SETTINGS["DB_PASSWORD"])
+    with engine.connect() as conn:
+        sql = sa.text("SELECT [ID], [UID], [Username], [Password] FROM [Account].[User] WHERE [Username] = :param_username")
+        sql = sql.bindparams(param_username=username)
+        ret = conn.execute(sql).one_or_none()
+        if ret is None:
+            return None
+        user = User(id=ret[0], uid=ret[1], username=ret[2], password=ret[3])
+    return user
+
 #endregion
 
 #region auth
@@ -116,13 +126,12 @@ async def check_valid_access_token(token: Annotated[str, Depends(oauth2_scheme)]
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        username: str = payload.get("sub::username")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = get_user(username)
     if user is None:
         raise credentials_exception
     return user
@@ -143,21 +152,17 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 @app.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    engine: sa.Engine = create_connection(APP_SETTINGS["DB_NAME"], APP_SETTINGS["DB_LOCATION"], APP_SETTINGS["DB_DRIVER"], APP_SETTINGS["DB_USERNAME"], APP_SETTINGS["DB_PASSWORD"])
-    with engine.connect() as conn:
-        sql = sa.text("SELECT [Password], [ID], [Username] FROM [Account].[User] WHERE [Username] = :param_username")
-        sql = sql.bindparams(param_username=form_data.username)
-        user = conn.execute(sql).one_or_none()
+    user = get_user(form_data.username)
 
-        if user is None:
-            raise HTTPException(status_code=400, detail="Incorrect username or password")
-        if check_password_hash(user[0], form_data.password) == False:
-            raise HTTPException(status_code=400, detail="Incorrect username or password")
+    if user is None:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    if check_password_hash(user.password, form_data.password) == False:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     access_token = create_access_token(
-        data={"sub::username": user[2], "sub::user_id": user[1]}, expires_delta=access_token_expires
+        data={"sub::username": user.username}, expires_delta=access_token_expires
     )
 
     return Token(access_token=access_token, token_type="bearer")
@@ -177,12 +182,19 @@ def read_item(token: Annotated[User, Depends(oauth2_scheme)]):
     print(payload)
     print(token)
     return {
-        "one": payload.get("sub"),
-        "two": payload.get("sub_id")
+        "one": payload.get("sub::username")
     }
 
 @app.patch("/Collection/Update")
-def update_item(item: CollectionUpdateItem):
+def update_item(item: CollectionUpdateItem, token: Annotated[User, Depends(check_valid_access_token)]):
+    print(token)
+    print(item)
+
+    engine:sa.Engine = create_connection(APP_SETTINGS["DB_NAME"], APP_SETTINGS["DB_LOCATION"], APP_SETTINGS["DB_DRIVER"], APP_SETTINGS["DB_USERNAME"], APP_SETTINGS["DB_PASSWORD"])
+    with engine.connect() as conn:
+        conn.execute(sa.text("[Collection].[UpdateMTGCollection] ?, ?"), [token.id, item])
+
+
     return {"success": True}
 
 @app.post("/User/Create")
@@ -191,7 +203,9 @@ def create_user(item: CreateUserItem):
         raise HTTPException(status_code=400, detail="Username did not comply with the minimum length of "+str(APP_SETTINGS["USERNAME_MINIMUM_LENGTH"]))
     if len(item.password) < APP_SETTINGS["PASSWORD_MINIMUM_LENGTH"]:
         raise HTTPException(status_code=400, detail="Username did not comply with the minimum length of "+str(APP_SETTINGS["PASSWORD_MINIMUM_LENGTH"]))
-    
+    if get_user(item.username) is not None:
+        raise HTTPException(status_code=400, detail="Username is taken")    
+
     success: bool = False
 
     password_hash = get_password_hash(item.password)
