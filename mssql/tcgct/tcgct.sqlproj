@@ -55,6 +55,8 @@
   <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
+    <Folder Include="Account\Scripts" />
+    <Folder Include="Account\Scripts\PostDeploy" />
     <Folder Include="Collection\StoredProcedures" />
     <Folder Include="Properties" />
     <Folder Include="MTG" />
@@ -66,8 +68,14 @@
     <Folder Include="Collection\Tables" />
     <Folder Include="Account" />
     <Folder Include="Account\Tables" />
+    <Folder Include="Account\StoredProcedures\" />
+    <Folder Include="TCGCT\" />
+    <Folder Include="TCGCT\Scripts" />
+    <Folder Include="TCGCT\Scripts\PostDeploy" />
+    <Folder Include="TCGCT\Tables\" />
   </ItemGroup>
   <ItemGroup>
+    <Build Include="Account\StoredProcedures\TryCreateAccount.sql" />
     <Build Include="Collection\StoredProcedures\UpdateMTGCollection.sql" />
     <Build Include="MTG\StoredProcedures\DumpData.sql" />
     <Build Include="MTG\StoredProcedures\StringAggGroupExample.sql" />
@@ -86,12 +94,21 @@
     <Build Include="Security\Collection.sql" />
     <Build Include="Security\Account.sql" />
     <Build Include="Account\Tables\User.sql" />
+    <Build Include="Security\TCGCT.sql" />
+    <Build Include="TCGCT\Tables\Games.sql" />
+    <Build Include="TCGCT\Tables\Settings.sql" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="'$(NetCoreBuild)' == 'true'">
       <Version>1.0.0</Version>
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Account\Scripts\PostDeploy\Script.PostDeploymentAccountSettings.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="TCGCT\Scripts\PostDeploy\Script.PostDeploymentTCGCTGames.sql" />
   </ItemGroup>
   <Import Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" Condition="'$(NetCoreBuild)' == 'true'" />
   <Target Name="BeforeBuild">
