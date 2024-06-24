@@ -2,6 +2,7 @@ import sqlalchemy as sa
 import logging as lo
 import datetime as dt
 import jwt
+import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
@@ -136,7 +137,7 @@ async def check_valid_access_token(token: Annotated[str, Depends(oauth2_scheme)]
         raise credentials_exception
     return user
 
-def get_password_hash(password) :
+def get_password_hash(password):
     hashed_password = generate_password_hash(password=password,salt_length=16)
     return hashed_password
 
@@ -187,15 +188,28 @@ def read_item(token: Annotated[User, Depends(oauth2_scheme)]):
 
 @app.patch("/Collection/Update")
 def update_item(item: CollectionUpdateItem, token: Annotated[User, Depends(check_valid_access_token)]):
-    print(token)
-    print(item)
+    json_str = "{ \"ids\":"+json.dumps(item.ids)+"}"
 
     engine:sa.Engine = create_connection(APP_SETTINGS["DB_NAME"], APP_SETTINGS["DB_LOCATION"], APP_SETTINGS["DB_DRIVER"], APP_SETTINGS["DB_USERNAME"], APP_SETTINGS["DB_PASSWORD"])
-    with engine.connect() as conn:
-        conn.execute(sa.text("[Collection].[UpdateMTGCollection] ?, ?"), [token.id, item])
+    conn = engine.raw_connection()
+    cursor = conn.cursor()
 
+    sql = sa.text("[Collection].[UpdateMTGCollection] :param_id, :param_json")
+    sql = sql.bindparams(param_id=token.id, param_json=json_str)    
+    
+    cursor.execute("EXEC [Collection].[UpdateMTGCollection] ?, ?", (token.id, json_str))
+    result = cursor.fetchone()[0]
+    cursor.close() 
+    conn.commit()
+    conn.close()
 
-    return {"success": True}
+    if result == 1:
+        return {"success": True}
+    else:
+        raise HTTPException(status_code=500, detail="Not all provided objects exist in tables")
+
+    
+
 
 @app.post("/User/Create")
 def create_user(item: CreateUserItem):
@@ -213,7 +227,7 @@ def create_user(item: CreateUserItem):
     try:
         with engine.connect() as conn:
             sql = sa.text("INSERT INTO [Account].[User]([Username], [Password]) VALUES(:param_username, :param_password)")
-            sql = sql.bindparams(param_username=item.username, param_password=password_hash)
+            sql = sql.bindparams(param_username=item.username, param_password=password_hash.upper())
             conn.execute(sql)
             conn.commit()
         success = True

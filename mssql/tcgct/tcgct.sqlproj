@@ -55,8 +55,6 @@
   <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
-    <Folder Include="Account\Scripts" />
-    <Folder Include="Account\Scripts\PostDeploy" />
     <Folder Include="Collection\StoredProcedures" />
     <Folder Include="Properties" />
     <Folder Include="MTG" />
@@ -103,9 +101,6 @@
       <Version>1.0.0</Version>
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Account\Scripts\PostDeploy\Script.PostDeploymentAccountSettings.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="TCGCT\Scripts\PostDeploy\Script.PostDeploymentTCGCTGames.sql" />
