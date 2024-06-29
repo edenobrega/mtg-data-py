@@ -9,7 +9,15 @@ BEGIN
         RETURN
     END
 
-    INSERT INTO [Account].[User]([Username], [Password]) VALUES (@Username, @Password)
+    DECLARE @newUserID TABLE (userID INT) 
+
+    INSERT INTO [Account].[User]([Username], [Password]) 
+    OUTPUT inserted.ID INTO @newUserID
+    VALUES (@Username, @Password)
+
+    DECLARE @userID INT = (SELECT TOP 1 userID FROM @newUserID)
+
+    EXECUTE [TCGCT].[CreateDefaultSettings] @userID
 
     SELECT 1
 END

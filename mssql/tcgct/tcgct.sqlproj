@@ -70,6 +70,7 @@
     <Folder Include="TCGCT\" />
     <Folder Include="TCGCT\Scripts" />
     <Folder Include="TCGCT\Scripts\PostDeploy" />
+    <Folder Include="TCGCT\StoredProcedures" />
     <Folder Include="TCGCT\Tables\" />
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +94,7 @@
     <Build Include="Security\Account.sql" />
     <Build Include="Account\Tables\User.sql" />
     <Build Include="Security\TCGCT.sql" />
+    <Build Include="TCGCT\StoredProcedures\CreateDefaultSettings.sql" />
     <Build Include="TCGCT\Tables\Games.sql" />
     <Build Include="TCGCT\Tables\Settings.sql" />
   </ItemGroup>
