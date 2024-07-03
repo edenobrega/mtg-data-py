@@ -1,4 +1,4 @@
-ALTER PROCEDURE [TCGCT].[CreateDefaultSettings]
+CREATE PROCEDURE [TCGCT].[CreateDefaultSettings]
   @userID INT
 AS
 BEGIN

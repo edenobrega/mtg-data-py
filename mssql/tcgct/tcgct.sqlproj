@@ -55,15 +55,12 @@
   <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
-    <Folder Include="Collection\StoredProcedures" />
     <Folder Include="Properties" />
     <Folder Include="MTG" />
     <Folder Include="MTG\StoredProcedures" />
     <Folder Include="MTG\Tables" />
     <Folder Include="MTG\Views" />
     <Folder Include="Security" />
-    <Folder Include="Collection" />
-    <Folder Include="Collection\Tables" />
     <Folder Include="Account" />
     <Folder Include="Account\Tables" />
     <Folder Include="Account\StoredProcedures\" />
@@ -75,13 +72,14 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Account\StoredProcedures\TryCreateAccount.sql" />
-    <Build Include="Collection\StoredProcedures\UpdateMTGCollection.sql" />
     <Build Include="MTG\StoredProcedures\DumpData.sql" />
     <Build Include="MTG\StoredProcedures\StringAggGroupExample.sql" />
+    <Build Include="MTG\StoredProcedures\UpdateMTGCollection.sql" />
     <Build Include="MTG\Tables\Card.sql" />
     <Build Include="MTG\Tables\CardFace.sql" />
     <Build Include="MTG\Tables\CardPart.sql" />
     <Build Include="MTG\Tables\CardType.sql" />
+    <Build Include="MTG\Tables\CollectedCards.sql" />
     <Build Include="MTG\Tables\Layout.sql" />
     <Build Include="MTG\Tables\Rarity.sql" />
     <Build Include="MTG\Tables\Set.sql" />
@@ -89,13 +87,12 @@
     <Build Include="MTG\Tables\TypeLine.sql" />
     <Build Include="MTG\Views\TableCounts.sql" />
     <Build Include="Security\MTG.sql" />
-    <Build Include="Collection\Tables\CollectedCards_MTG.sql" />
-    <Build Include="Security\Collection.sql" />
     <Build Include="Security\Account.sql" />
     <Build Include="Account\Tables\User.sql" />
     <Build Include="Security\TCGCT.sql" />
     <Build Include="TCGCT\StoredProcedures\CreateDefaultSettings.sql" />
     <Build Include="TCGCT\Tables\Games.sql" />
+    <Build Include="TCGCT\Tables\PinnedSet.sql" />
     <Build Include="TCGCT\Tables\Settings.sql" />
   </ItemGroup>
   <ItemGroup>

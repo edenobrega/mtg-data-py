@@ -1,4 +1,4 @@
-CREATE PROCEDURE [Collection].[UpdateMTGCollection]
+CREATE PROCEDURE [MTG].[UpdateMTGCollection]
     @userID INT,
     @json NVARCHAR(MAX)
 
@@ -18,8 +18,8 @@ BEGIN
     DECLARE @existing INT = (
         SELECT COUNT(1)
         FROM #temp AS t
-        JOIN mtg.[Set] AS s ON s.shorthand = t.SetCode
-        JOIN mtg.Card AS c ON c.card_set_id = s.id AND c.collector_number = t.Card
+        JOIN [MTG].[Set] AS s ON s.[shorthand] = t.[SetCode]
+        JOIN [MTG].[Card] AS c ON c.[card_set_id] = s.[id] AND c.[collector_number] = t.[Card]
     )
 
     IF @existing != (SELECT COUNT(1) FROM #temp)
@@ -28,12 +28,12 @@ BEGIN
         RETURN
     END
 
-    MERGE INTO [Collection].[CollectedCards_MTG] AS ccm
+    MERGE INTO [MTG].[CollectedCards] AS ccm
     USING (
-            SELECT c.id AS [CardID], [change]
+            SELECT c.id AS [CardID], [Change]
             FROM #temp AS t
-            JOIN mtg.[Set] AS s ON s.shorthand = t.SetCode
-            JOIN mtg.Card AS c ON c.card_set_id = s.id AND c.collector_number = t.Card
+            JOIN [MTG].[Set] AS s ON s.[shorthand] = t.[SetCode]
+            JOIN [MTG].[Card] AS c ON c.[card_set_id] = s.[id] AND c.[collector_number] = t.[Card]
         ) AS cv ON ccm.UserID = @userID AND cv.CardID = ccm.CardID
     WHEN MATCHED THEN
         UPDATE SET [Count] = [Count] + cv.[Change]
@@ -41,7 +41,7 @@ BEGIN
         INSERT ([UserID], [CardID], [Count])
         VALUES (@userID, cv.[CardID], cv.[Change]);
 
-    DELETE FROM [Collection].[CollectedCards_MTG]
+    DELETE FROM [MTG].[CollectedCards]
     WHERE [Count] < 1
 
     SELECT 1
