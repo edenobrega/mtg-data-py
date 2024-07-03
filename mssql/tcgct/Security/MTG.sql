@@ -1,4 +1,0 @@
-CREATE SCHEMA [MTG]
-    AUTHORIZATION [dbo];
-GO
-
