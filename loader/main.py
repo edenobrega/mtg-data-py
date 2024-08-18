@@ -99,9 +99,10 @@ def create_connection(db_name: str, db_location: str, db_driver: str, db_protect
                         """)
             sql = sql.bindparams(db_name=db_name)
             schema_check = conn.execute(sql).one_or_none()
-            if schema_check is None:
-                log.critical("tables are missing from the schema")
-                exit_as_failed()
+            # TODO: This is flawed, rework or remove 
+            # if schema_check is None:
+            #     log.critical("tables are missing from the schema")
+            #     exit_as_failed()
             log.debug("tables exist")
     except Exception as ex:
         log.critical("failed to connect to db : %s", ex)
@@ -229,10 +230,13 @@ def transform(cards_raw: pd.DataFrame, sets_frame: pd.DataFrame):
 def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, parts: pd.DataFrame, type_lines: pd.DataFrame, types: pd.DataFrame, rarities: pd.Series, layouts: pd.Series, sets_info: pd.DataFrame) -> None:
     '''Final transformations to match DB and insert into tables '''
 
+    was_updated: bool = False
+
     log.info("Beginning load . . .")
     
     #region Update Sets
     if sets_info.shape[0] > 0:
+        was_updated = True
         sets_info = sets_info.rename(columns={
             "id": "source_id",
             "icon_svg_uri": "icon",
@@ -275,6 +279,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     db_settypes = get_from_db("SELECT [name] FROM [MTG].[SetType]")
     new_settypes = tf_settypes.loc[~tf_settypes["name"].isin(db_settypes["name"]), :]
     if new_settypes.shape[0] > 0:
+        was_updated = True
         new_settypes.to_sql(
             schema="MTG",
             name="SetType",
@@ -293,6 +298,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     db_sets = get_from_db("select [source_id] from mtg.[Set]")
     new_sets: pd.DataFrame = sets_source_ids.loc[~sets_source_ids["set_id"].isin(db_sets["source_id"])]
     if new_sets.shape[0] > 0:
+        was_updated = True
         new_sets = new_sets.rename(columns={
             "set_id":"source_id",
             "set":"shorthand",
@@ -325,6 +331,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     #region Rarity
     log.info("checking for new rarities")
     if rarities.empty == False:
+        was_updated = True
         db_rarities = get_from_db("select [name] from [MTG].[Rarity]")
         new_rarities = rarities.copy().loc[~rarities.isin(db_rarities["name"])]
         if new_rarities.shape[0] > 0:
@@ -347,6 +354,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     log.info("checking for new layouts")
 
     if layouts.empty == False:
+        was_updated = True
         db_layouts = get_from_db("select [name] from [MTG].[Layout]")
         new_layouts = layouts.copy().loc[~layouts.isin(db_layouts["name"])]        
         if new_layouts.shape[0] > 0:
@@ -368,6 +376,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
     #region Card Types
     log.info("checking for new card types")
     if types.empty == False:
+        was_updated = True
         db_card_types = get_from_db("SELECT [name] FROM [MTG].[CardType]")
         new_card_types: pd.DataFrame = types.loc[~types["type_line"].isin(db_card_types["name"])].copy()
         if new_card_types.shape[0] > 0:
@@ -393,6 +402,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         db_card_ids = get_from_db("SELECT [source_id], [id] FROM [MTG].[Card]")
         new_cards: pd.DataFrame = cards.copy().loc[~cards["id"].isin(db_card_ids["source_id"])]
         if new_cards.shape[0] > 0:
+            was_updated = True
             rarity_lookup = get_from_db("select [id], [name] from [MTG].[Rarity]").set_index("name")
             layout_lookup = get_from_db("select [id], [name] from [MTG].[Layout]").set_index("name")
             set_lookup = get_from_db("SELECT [id], [shorthand] FROM [MTG].[Set]").set_index("shorthand")
@@ -460,6 +470,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
 
         new_card_faces: pd.DataFrame = faces.copy().loc[~faces["id"].isin(db_card_faces["source_id"])]
         if new_card_faces.shape[0] > 0:
+            was_updated = True
             # map the datbase card id to the object 
             db_card_dict = get_from_db("SELECT [ID], [source_id] FROM [MTG].[Card]").set_index("source_id").to_dict()["ID"]
             new_card_faces["id"] = new_card_faces["id"].map(db_card_dict)
@@ -512,6 +523,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         })
 
         if new_card_parts.shape[0] > 0:
+            was_updated = True
             log.info("adding new card parts . . .")
             new_card_parts.to_sql(
                 schema="MTG",
@@ -537,6 +549,7 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
         db_card_types: pd.DataFrame = get_from_db("SELECT [id], [name] FROM [MTG].[CardType]").set_index("name").to_dict()["id"]
         db_type_lines: pd.DataFrame = get_from_db("SELECT [card_id], [type_id], [order] FROM [MTG].[TypeLine]")
         if type_lines.shape[0] > 0:
+            was_updated = True
             card_to_type: pd.DataFrame = type_lines.copy()
             card_to_type["order"] = card_to_type.groupby("id").cumcount().add(1)
             card_to_type["id"] = card_to_type["id"].map(db_card_dict)
@@ -559,7 +572,10 @@ def save_to_db(cards: pd.DataFrame, sets: pd.DataFrame, faces: pd.DataFrame, par
 
             log.info("new card type lines added")
     #endregion
-    
+    if was_updated == True:
+        with engine.connect() as conn:
+            conn.execute(sa.text("UPDATE [TCGCT].[Games] SET [LastUpdated] = GETUTCDATE() WHERE [Name] = 'MTG'"))
+
     log.info("finished loading data")
 
 if __name__ == "__main__":
